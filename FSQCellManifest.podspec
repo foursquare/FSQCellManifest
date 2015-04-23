@@ -10,5 +10,5 @@ Pod::Spec.new do |s|
                   :tag => "v#{s.version}" }
   s.source_files  = '*.{h,m}'
   s.requires_arc  = true
-  s.dependency = 'FSQMessageForwarder', '~> 1.0'
+  s.dependency 'FSQMessageForwarder', '~> 1.0'
 end
