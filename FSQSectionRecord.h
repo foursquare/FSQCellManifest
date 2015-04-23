@@ -17,8 +17,6 @@
  For a UICollectionView, the cellClass should be a UICollectionReusableView subclass.
  
  @note Setting a header for a collection view will do nothing unless the collection view's layout supports headers.
- 
- Also see: [FSQCellRecord recordForStandardUITableViewHeaderOrFooterWithString:]
  */
 @property (nonatomic, retain) FSQCellRecord *header;
 
@@ -29,8 +27,6 @@
  For a UICollectionView, the cellClass should be a UICollectionReusableView subclass.
  
  @note Setting a footer for a collection view will do nothing unless the collection view's layout supports footers.
- 
- Also see: [FSQCellRecord recordForStandardUITableViewHeaderOrFooterWithString:]
  */
 @property (nonatomic, retain) FSQCellRecord *footer;
 
