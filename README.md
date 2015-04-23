@@ -76,4 +76,4 @@ Plugins can be set when the manifest is initialized, or added/removed later. In 
 Contributors
 ============
 
-FSQCellManifest was initially developed by Foursquare Labs for internal use. It was originally written and is currently maintained by Brian Dorfman (@bdorfman).
+FSQCellManifest was initially developed by Foursquare Labs for internal use. It was originally written and is currently maintained by Brian Dorfman ([@bdorfman](https://twitter.com/bdorfman)).
