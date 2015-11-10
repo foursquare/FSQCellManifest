@@ -7,10 +7,10 @@
 //
 
 #import "FSQExampleManifestTableViewController.h"
-
-#import "FSQCellManifest.h"
 #import "FSQExampleUserModel.h"
 #import "FSQExampleUserTableViewCell.h"
+
+@import FSQCellManifest;
 
 // Note: In a real app, use NSCalendar instead of macros like these :)
 #define TIME_INTERVAL_ONE_MINUTE ((NSTimeInterval) 60)

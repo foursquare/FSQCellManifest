@@ -6,7 +6,7 @@
 
 #import "FSQCellManifest.h"
 
-#import "FSQMessageForwarder.h"
+@import FSQMessageForwarder;
 
 #pragma mark - Begin Private Headers, Types, and Constants
 
@@ -1821,8 +1821,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     if (self.collectionView == collectionView) {
         
         FSQCellRecord *record = nil;
-        FSQCellRecordType recordType;
-        
+        FSQCellRecordType recordType = FSQCellRecordTypeBody;
         
         if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
             record = [self sectionRecordAtIndex:indexPath.section].header;

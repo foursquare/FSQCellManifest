@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Foursquare. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 @interface FSQExampleUserModel : NSObject
 @property (nonatomic, copy) NSString *name;

@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "006AD1F79CF59F49EA2A355C9740358AB2C1E1C5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "006AD1F79CF59F49EA2A355C9740358AB2C1E1C5" : 0,
+    "EADC02F43F7C4F3DC8E1BD529B703D56DCBF159D" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "82E41FB7-FB11-4F52-A8C5-373C24188B9F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "006AD1F79CF59F49EA2A355C9740358AB2C1E1C5" : "FSQCellManifest\/",
+    "EADC02F43F7C4F3DC8E1BD529B703D56DCBF159D" : "FSQMessageForwarder\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "FSQCellManifest",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "FSQCellManifestExample\/FSQCellManifest.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:foursquare\/FSQCellManifest.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "006AD1F79CF59F49EA2A355C9740358AB2C1E1C5"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:foursquare\/FSQMessageForwarder.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "EADC02F43F7C4F3DC8E1BD529B703D56DCBF159D"
+    }
+  ]
+}

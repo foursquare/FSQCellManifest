@@ -4,7 +4,7 @@
 //  Copyright (c) 2015 Foursquare. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 @class FSQCellRecord, FSQSectionRecord, FSQCellManifest, FSQTableViewCellManifest, FSQCollectionViewCellManifest;
 
