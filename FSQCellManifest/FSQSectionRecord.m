@@ -25,10 +25,6 @@
     return self;
 }
 
-- (void)setCellRecords:(NSArray *)cellRecords {
-    _cellRecords = [cellRecords copy];
-}
-
 - (NSInteger)numberOfCellRecords {
     return [_cellRecords count];
 }
@@ -91,16 +87,13 @@
             );
 }
 
-
-// Exposed for internal use of other FSQCellManifest files only
-- (NSArray *)cellRecordsInternal {
+- (NSArray *)cellRecords {
     if (_cellRecords) {
         return _cellRecords;
     }
     else {
         return  @[];
     }
-    
 }
 
 // Exposed for internal use of other FSQCellManifest files only

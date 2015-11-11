@@ -7,9 +7,9 @@
 //
 
 #import "FSQExampleUserTableViewCell.h"
-
-#import "FSQCellManifestProtocols.h"
 #import "FSQExampleUserModel.h"
+
+@import FSQCellManifest;
 
 static const CGFloat kLabelHorizontalPadding = 10;
 static const CGFloat kLabelVerticalPadding = 5;
@@ -88,23 +88,25 @@ static const CGFloat kLabelVerticalPadding = 5;
     self.joinDateLabel.text = user.joinDateString;
 }
 
-
-
 @end
 
 @implementation FSQExampleUserModel (CellAdditions)
+
 - (NSString *)joinDateString{
     return [NSString stringWithFormat:@"User since %@", [NSDateFormatter localizedStringFromDate:self.joinDate 
                                                                                        dateStyle:NSDateFormatterLongStyle 
                                                                                        timeStyle:NSDateFormatterNoStyle]];
 }
+
 @end
 
 @implementation NSString (FSQExampleAdditions)
+
 - (CGFloat)heightForWidth:(CGFloat)width font:(UIFont *)font {
     return [self boundingRectWithSize:CGSizeMake(width, CGFLOAT_MAX)
                               options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingTruncatesLastVisibleLine | NSLineBreakByWordWrapping
                            attributes:@{ NSFontAttributeName : font}
                               context:nil].size.height;
 }
+
 @end

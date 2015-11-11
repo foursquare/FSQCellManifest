@@ -1,6 +1,8 @@
 FSQCellManifest
 ===============
 
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 A UITableView and UICollectionView delegate and datasource that provides a simpler unified interface for describing your sections and cells.
 
 Overview
@@ -19,16 +21,29 @@ The manifest classes are all thoroughly documented in their header file, but thi
 Setup
 =====
 
-If you use Cocoapods, you can add simply this project to your podfile. Otherwise if you use git we recommend adding this repo as a submodule of your repo for easy updating to new versions. Alternatively you can just copy all the files (excluding the example project) to into your repo.
+## Carthage
 
-FSQCellManifest also requires [FSQMessageForwarder](https://github.com/foursquare/FSQMessageForwarder) to work. If you are using Cocoapods, this should be taken care of for you automatically. Otherwise you will need to manually add that repo to your project as well (e.g. via git submodules or manually copying the files into your repo).
+If your minimum iOS version requirement is 8.0 or greater, Carthage is the recommended way to integrate FSQCellManifest with your app.
+Add `github "foursquare/FSQCellManifest"` to your Cartfile and follow the instructions from [Carthage's README](https://github.com/Carthage/Carthage) for adding Carthage-built frameworks to your project.
+
+## Cocoapods
+
+If you use Cocoapods, you can add `pod 'FSQCellManifest', '~> [desired version here]'` to your Podfile. Further instructions on setting up and using Cocoapods can be found on [their website](https://cocoapods.org)
+
+## Manual Installation
+
+You can also simply add the objc files in the `FSQCellManifest` directoryto your project, either by copying them over, or using git submodules.
+
+## FSQMessageForwarder
+
+FSQCellManifest also requires [FSQMessageForwarder](https://github.com/foursquare/FSQMessageForwarder) to work. If you are using Carthage or Cocoapods, this should be taken care of for you automatically. Otherwise you will need to manually add that repo to your project as well (e.g. via git submodules or manually copying the files into your repo).
 
 Example App
 ===========
 
 An example app is included with this project that creates a simple table view with some dummy data. If you want to get quickly set up with FSQCellManifest you may want to look at that to see how easy it is to get started. 
 
-You will need to add in FSQMessageForwarder as described above before the app will build.
+The example app requires the FSQMessageForwarder framework to run, which is not included in this repo. If you have Carthage installed, you can simply run `carthage bootstrap` to get the framework set up in the correct location. Otherwise you will need to manually add the forwarder framework to the location specified in the example app's Xcode project settings.
 
 Using FSQCellManifest
 =====================

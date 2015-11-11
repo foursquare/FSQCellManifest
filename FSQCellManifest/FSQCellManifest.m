@@ -6,9 +6,12 @@
 
 #import "FSQCellManifest.h"
 
-#import "FSQMessageForwarder.h"
+@import FSQMessageForwarder;
 
 #pragma mark - Begin Private Headers, Types, and Constants
+
+const NSInteger kRowIndexForHeaderIndexPaths = -1;
+const NSInteger kRowIndexForFooterIndexPaths = -2;
 
 static NSString *const kFSQIdentifierClassMismatchException = @"FSQIdentifierClassMismatchException";
 static NSString *const kFSQIdentifierCellDequeueException = @"FSQIdentifierCellDequeueException";
@@ -41,7 +44,6 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 // Define them here so that FSQCellManfiest can know about them.
 // They are for internal manifest use only and should not be used outside of the framework
 @interface FSQSectionRecord (FSQCellManifestPrivateMethods)
-- (NSArray *)cellRecordsInternal;
 - (NSValue *)collectionViewSectionInsetPrivate;
 @end
 
@@ -55,7 +57,6 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 #pragma mark - Begin Core Manifest
 
 @implementation FSQCellManifest {
-    NSArray *_sectionRecords;
     NSMutableDictionary *_identifierCellClassMap;
     FSQCellManifestMessageForwarderEnumerator *_scrollViewDelegateForwarderEnumerator;
 }
@@ -325,7 +326,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     /**  Do work  **/
     
     NSIndexSet *insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(row, [cellRecordsToInsert count])];
-    NSMutableArray *updatedCellRecords = [[sectionRecord cellRecordsInternal] mutableCopy];
+    NSMutableArray *updatedCellRecords = [sectionRecord.cellRecords mutableCopy];
     [updatedCellRecords insertObjects:cellRecordsToInsert atIndexes:insertedIndexes];
     [sectionRecord setCellRecords:updatedCellRecords];
     NSMutableArray *insertedIndexPathsMutable = [NSMutableArray new];
@@ -448,13 +449,13 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     
     /**  Do work  **/
     
-    NSMutableArray *mutableInitialRecords = [[initialSectionRecord cellRecordsInternal] mutableCopy];
+    NSMutableArray *mutableInitialRecords = [initialSectionRecord.cellRecords mutableCopy];
     NSMutableArray *mutableTargetRecords;
     if (initialSectionRecord == targetSectionRecord) {
         mutableTargetRecords = mutableInitialRecords;
     }
     else {
-        mutableTargetRecords = [[targetSectionRecord cellRecordsInternal] mutableCopy];
+        mutableTargetRecords = [targetSectionRecord.cellRecords mutableCopy];
     }
     
     FSQCellRecord *record = mutableInitialRecords[intitialCellIndex];
@@ -605,7 +606,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             }
         }
         else {
-            NSMutableArray *mutableCellRecords = [[sectionRecord cellRecordsInternal] mutableCopy];
+            NSMutableArray *mutableCellRecords = [sectionRecord.cellRecords mutableCopy];
             [mutableCellRecords removeObjectsAtIndexes:cellIndexesToRemove];
             [sectionRecord setCellRecords:mutableCellRecords];
         }
@@ -737,7 +738,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             return;
         } 
         
-        NSMutableArray *cellRecords = [[sectionRecord cellRecordsInternal] mutableCopy];
+        NSMutableArray *cellRecords = [sectionRecord.cellRecords mutableCopy];
         
         [replacedIndexPathsMutable addObject:indexPath];
         [replacedCellRecordsMutable addObject:cellRecords[cellIndex]];
@@ -1053,6 +1054,30 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return newIndexPathsToSelect;
 }
 
+- (BOOL)recordShouldHighlightAtIndexPath:(NSIndexPath *)indexPath {
+    FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
+    BOOL shouldHighlight = record.allowsHighlighting;
+    if (!shouldHighlight && ![record allowsHighlightingWasSet]) {
+        shouldHighlight = self.cellSelectionEnabledByDefault;
+    }
+    return shouldHighlight;
+}
+
+- (BOOL)recordShouldSelectAtIndexPath:(NSIndexPath *)indexPath {
+    FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
+    BOOL shouldSelect = record.allowsSelection;
+    if (!shouldSelect && ![record allowsSelectionWasSet]) {
+        shouldSelect = self.cellSelectionEnabledByDefault;
+    }
+    
+    if (shouldSelect) {
+        return YES;
+    }
+    else {
+        return NO;
+    }
+}
+
 @end
 
 #pragma mark End Core Manifest -
@@ -1337,10 +1362,10 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (CGFloat)heightForHeaderOrFooter:(FSQCellRecord *)record inSection:(NSInteger)section tableView:(UITableView *)tableView {
+- (CGFloat)heightForHeaderOrFooter:(FSQCellRecord *)record indexPath:(NSIndexPath *)indexPath tableView:(UITableView *)tableView {
     if ([record.cellClass conformsToProtocol:@protocol(FSQCellManifestTableViewCellProtocol)]) {
         CGSize maxSize = [self maxSizeForRecord:record atIndexPath:nil defaultWidth:CGRectGetWidth(tableView.frame) defaultHeight:CGFLOAT_MAX];
-        return [record.cellClass manifest:self heightForModel:record.model maximumSize:maxSize indexPath:[NSIndexPath indexPathForRow:NSNotFound inSection:section] record:record];
+        return [record.cellClass manifest:self heightForModel:record.model maximumSize:maxSize indexPath:indexPath record:record];
     }
     else {
         return 0;
@@ -1349,7 +1374,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if (tableView == self.tableView) {
-        return [self heightForHeaderOrFooter:[self sectionRecordAtIndex:section].header inSection:section tableView:tableView];
+        return [self heightForHeaderOrFooter:[self sectionRecordAtIndex:section].header indexPath:[NSIndexPath indexPathForRow:kRowIndexForHeaderIndexPaths inSection:section] tableView:tableView];
     }
     else {
         return 0;
@@ -1358,7 +1383,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if (tableView == self.tableView) {
-        return [self heightForHeaderOrFooter:[self sectionRecordAtIndex:section].footer inSection:section tableView:tableView];
+        return [self heightForHeaderOrFooter:[self sectionRecordAtIndex:section].footer indexPath:[NSIndexPath indexPathForRow:kRowIndexForFooterIndexPaths inSection:section] tableView:tableView];
     }
     else {
         return 0;
@@ -1368,7 +1393,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 - (UITableViewHeaderFooterView *)viewForHeaderOrFooter:(FSQCellRecordType)recordType 
                                                 record:(FSQCellRecord *)record 
                                              tableView:(UITableView *)tableView 
-                                          sectionIndex:(NSInteger)sectionIndex {
+                                             indexPath:(NSIndexPath *)indexPath {
     if (!record) {
         return nil;
     }
@@ -1380,10 +1405,10 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     UITableViewHeaderFooterView *headerFooterView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:identifier];
     
     if ([headerFooterView conformsToProtocol:@protocol(FSQCellManifestTableViewCellProtocol)]) {
-        [(id<FSQCellManifestCellProtocol>)headerFooterView manifest:self configureWithModel:record.model indexPath:[NSIndexPath indexPathForRow:NSNotFound inSection:sectionIndex] record:record];
+        [(id<FSQCellManifestCellProtocol>)headerFooterView manifest:self configureWithModel:record.model indexPath:indexPath record:record];
     }
     
-    [self configureView:headerFooterView withRecord:record recordType:recordType atIndexPath:[NSIndexPath indexPathForRow:NSNotFound inSection:sectionIndex]];
+    [self configureView:headerFooterView withRecord:record recordType:recordType atIndexPath:indexPath];
     
     return headerFooterView;
 }
@@ -1394,7 +1419,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         return [self viewForHeaderOrFooter:FSQCellRecordTypeHeader
                                     record:[self sectionRecordAtIndex:section].header 
                                  tableView:tableView 
-                              sectionIndex:section];
+                                 indexPath:[NSIndexPath indexPathForRow:kRowIndexForHeaderIndexPaths inSection:section]];
     }
     else {
         return nil;
@@ -1406,7 +1431,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         return [self viewForHeaderOrFooter:FSQCellRecordTypeFooter
                                     record:[self sectionRecordAtIndex:section].footer 
                                  tableView:tableView 
-                              sectionIndex:section];
+                                 indexPath:[NSIndexPath indexPathForRow:kRowIndexForFooterIndexPaths inSection:section]];
     }
     else {
         return nil;
@@ -1415,12 +1440,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.tableView) {
-        FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
-        BOOL shouldHighlight = record.allowsHighlighting;
-        if (!shouldHighlight && ![record allowsHighlightingWasSet]) {
-            shouldHighlight = self.cellSelectionEnabledByDefault;
-        }
-        return shouldHighlight;
+        return [self recordShouldHighlightAtIndexPath:indexPath];
     }
     else {
         return NO;
@@ -1429,13 +1449,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.tableView) {
-        FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
-        BOOL shouldSelect = record.allowsSelection;
-        if (!shouldSelect && ![record allowsSelectionWasSet]) {
-            shouldSelect = self.cellSelectionEnabledByDefault;
-        }
-        
-        if (shouldSelect) {
+        if ([self recordShouldSelectAtIndexPath:indexPath]) {
             return indexPath;
         }
         else {
@@ -1518,7 +1532,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         case FSQIdentifierRegistrationResultConflictingExistingType:
         {
             @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException 
-                                            reason:[NSString stringWithFormat:@"Tried to register class %@ for identifier %@, but a different class was already registered.", cellClass, identifier]
+                                            reason:[NSString stringWithFormat:@"Tried to register class %@ for identifier %@, but a different class was already registered. Delegate: %@", cellClass, identifier, self.delegate]
                                           userInfo:nil]);
         }
     }
@@ -1804,11 +1818,12 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         
         if (!cell) {
             @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException 
-                                            reason:[NSString stringWithFormat:@"Tried to dequeue cell of class %@ for identifier %@, but failed.", record.cellClass, identifier]
+                                            reason:[NSString stringWithFormat:@"Tried to dequeue cell of class %@ for identifier %@, but failed. Delegate: %@", record.cellClass, identifier, self.delegate]
                                           userInfo:nil]);
         }
         
         [self configureView:cell withRecord:record recordType:FSQCellRecordTypeBody atIndexPath:indexPath];
+        [cell setNeedsLayout];
         return cell;
     }
     else {
@@ -1821,8 +1836,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     if (self.collectionView == collectionView) {
         
         FSQCellRecord *record = nil;
-        FSQCellRecordType recordType;
-        
+        FSQCellRecordType recordType = FSQCellRecordTypeBody;
         
         if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
             record = [self sectionRecordAtIndex:indexPath.section].header;
@@ -1846,7 +1860,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             
             if (!view) {
                 @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException 
-                                                reason:[NSString stringWithFormat:@"Tried to dequeue supplementary view for kind %@ of class %@ for identifier %@, but failed.", kind, record.cellClass, identifier]
+                                                reason:[NSString stringWithFormat:@"Tried to dequeue supplementary view for kind %@ of class %@ for identifier %@, but failed. Delegate: %@", kind, record.cellClass, identifier, self.delegate]
                                               userInfo:nil]);
             }
             
@@ -1856,7 +1870,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         }
         else {
             @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException 
-                                            reason:[NSString stringWithFormat:@"Missing record when trying to dequeue supplementary view for kind %@ at index path %@", kind, indexPath]
+                                            reason:[NSString stringWithFormat:@"Missing record when trying to dequeue supplementary view for kind %@ at index path %@. Likely your delegate returned a non-zero size for an empty view. Delegate: %@", kind, indexPath, self.delegate]
                                           userInfo:nil]);
             return nil;
         }
@@ -1905,7 +1919,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         case FSQIdentifierRegistrationResultConflictingExistingType:
         {
             @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException 
-                                            reason:[NSString stringWithFormat:@"Tried to register class %@ for identifier %@, but a different class was already registered.", cellClass, identifier]
+                                            reason:[NSString stringWithFormat:@"Tried to register class %@ for identifier %@, but a different class was already registered. Delegate: %@", cellClass, identifier, self.delegate]
                                           userInfo:nil]);
         }
     }
@@ -1937,7 +1951,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
     if (collectionView == self.collectionView) {
-        return [self cellRecordAtIndexPath:indexPath].allowsHighlighting;        
+        return [self recordShouldHighlightAtIndexPath:indexPath];        
     }
     else {
         return NO;
@@ -1946,7 +1960,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (collectionView == self.collectionView) {
-        return [self cellRecordAtIndexPath:indexPath].allowsSelection;    
+        return [self recordShouldSelectAtIndexPath:indexPath];    
     }
     else {
         return NO;
@@ -1980,7 +1994,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         FSQCellRecord *record = [self sectionRecordAtIndex:section].header;
         if ([record.cellClass conformsToProtocol:@protocol(FSQCellManifestCollectionViewCellProtocol)]) {
             CGSize maxSize = [self maxSizeForRecord:record atIndexPath:nil defaultWidth:CGFLOAT_MAX defaultHeight:CGFLOAT_MAX];
-            return [record.cellClass manifest:self sizeForModel:record.model maximumSize:maxSize indexPath:[NSIndexPath indexPathForItem:NSNotFound inSection:section] record:record];
+            return [record.cellClass manifest:self sizeForModel:record.model maximumSize:maxSize indexPath:[NSIndexPath indexPathForItem:kRowIndexForHeaderIndexPaths inSection:section] record:record];
         }
         
         return CGSizeZero;
@@ -1994,7 +2008,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         FSQCellRecord *record = [self sectionRecordAtIndex:section].footer;
         if ([record.cellClass conformsToProtocol:@protocol(FSQCellManifestCollectionViewCellProtocol)]) {
             CGSize maxSize = [self maxSizeForRecord:record atIndexPath:nil defaultWidth:CGFLOAT_MAX defaultHeight:CGFLOAT_MAX];
-            return [record.cellClass manifest:self sizeForModel:record.model maximumSize:maxSize indexPath:[NSIndexPath indexPathForItem:NSNotFound inSection:section] record:record];
+            return [record.cellClass manifest:self sizeForModel:record.model maximumSize:maxSize indexPath:[NSIndexPath indexPathForItem:kRowIndexForFooterIndexPaths inSection:section] record:record];
         }
     }
     

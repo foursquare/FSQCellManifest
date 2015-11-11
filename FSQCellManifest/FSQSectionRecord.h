@@ -31,6 +31,16 @@
 @property (nonatomic, retain) FSQCellRecord *footer;
 
 /**
+ An array of FSQCellRecord objects that correspond to the rows or items in a table view or collection view section.
+ 
+ Individual records, once set, can be accessed via cellRecordAtIndex:
+ 
+ @note To update a FSQSectionRecord that is already on a FSQCellManifest,
+ do not set this property. Instead, use the insertion/removal methods in FSQCellManifest.
+ */
+@property (nonatomic, copy) NSArray<FSQCellRecord *> *cellRecords;
+
+/**
  Insets for this section in a collection view.
  
  If you are not using a collection view manifest with a flow layout (or another layout using the same
@@ -45,15 +55,6 @@
  You can use it to attach arbitrary data to the cell record for your own later use.
  */
 @property (nonatomic, readonly) NSMutableDictionary *userInfo;
-
-/**
- Use this method to set the cell records in this section.
- 
- Individual records, once set, can be accessed via cellRecordAtIndex:
- 
- @param cellRecords The new array of FSQCellRecord objects for this section. The array will be copied.
- */
-- (void)setCellRecords:(NSArray *)cellRecords;
 
 /**
  The number of records in this section
@@ -76,7 +77,7 @@
  
  @return A new FSQSectionRecord object with the given properties set.
  */
-- (instancetype)initWithCellRecords:(NSArray *)cellRecords
+- (instancetype)initWithCellRecords:(NSArray<FSQCellRecord *> *)cellRecords
                              header:(FSQCellRecord *)header
                              footer:(FSQCellRecord *)footer;
 

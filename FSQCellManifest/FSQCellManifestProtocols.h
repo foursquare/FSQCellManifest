@@ -138,35 +138,35 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  */
 @protocol FSQCellManifestRecordModificationDelegate <NSObject>
 @optional
-- (void)manifest:(FSQCellManifest *)manifest willReplaceSectionRecords:(NSArray *)currentSectionRecords withRecords:(NSArray *)newSectionRecords;
-- (void)manifest:(FSQCellManifest *)manifest didReplaceSectionRecords:(NSArray *)oldSectionRecords withRecords:(NSArray *)currentSectionRecords;
+- (void)manifest:(FSQCellManifest *)manifest willReplaceSectionRecords:(NSArray<FSQSectionRecord *> *)currentSectionRecords withRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords;
+- (void)manifest:(FSQCellManifest *)manifest didReplaceSectionRecords:(NSArray<FSQSectionRecord *> *)oldSectionRecords withRecords:(NSArray<FSQSectionRecord *> *)currentSectionRecords;
 
 - (void)manifestWillReloadManagedView:(FSQCellManifest *)manifest;
 - (void)manifestDidReloadManagedView:(FSQCellManifest *)manifest;
 
-- (void)manifest:(FSQCellManifest *)manifest willInsertCellRecords:(NSArray *)cellRecords atIndexPath:(NSIndexPath *)indexPath;
-- (void)manifest:(FSQCellManifest *)manifest didInsertCellRecords:(NSArray *)cellRecords atIndexPaths:(NSArray *)indexPaths;
+- (void)manifest:(FSQCellManifest *)manifest willInsertCellRecords:(NSArray<FSQCellRecord *> *)cellRecords atIndexPath:(NSIndexPath *)indexPath;
+- (void)manifest:(FSQCellManifest *)manifest didInsertCellRecords:(NSArray<FSQCellRecord *> *)cellRecords atIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
 
 - (void)manifest:(FSQCellManifest *)manifest willMoveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath toIndexPath:(NSIndexPath *)targetIndexPath;
 - (void)manifest:(FSQCellManifest *)manifest didMoveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath toIndexPath:(NSIndexPath *)targetIndexPath;
 
-- (void)manifest:(FSQCellManifest *)manifest willReplaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withRecords:(NSArray *)cellRecords;
-- (void)manifest:(FSQCellManifest *)manifest didReplaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withRecords:(NSArray *)newCellRecords replacedRecords:(NSArray *)originalCellRecords;
+- (void)manifest:(FSQCellManifest *)manifest willReplaceCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRecords:(NSArray<FSQCellRecord *> *)cellRecords;
+- (void)manifest:(FSQCellManifest *)manifest didReplaceCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRecords:(NSArray<FSQCellRecord *> *)newCellRecords replacedRecords:(NSArray<FSQCellRecord *> *)originalCellRecords;
 
-- (void)manifest:(FSQCellManifest *)manifest willRemoveCellRecordsAtIndexPaths:(NSArray *)indexPaths removingEmptySections:(BOOL)willRemoveEmptySections;
-- (void)manifest:(FSQCellManifest *)manifest didRemoveCellRecordsAtIndexPaths:(NSArray *)indexPaths removedEmptySectionsAtIndexes:(NSIndexSet *)removedSections;
+- (void)manifest:(FSQCellManifest *)manifest willRemoveCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths removingEmptySections:(BOOL)willRemoveEmptySections;
+- (void)manifest:(FSQCellManifest *)manifest didRemoveCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths removedEmptySectionsAtIndexes:(NSIndexSet *)removedSections;
 
-- (void)manifest:(FSQCellManifest *)manifest willReloadCellsAtIndexPaths:(NSArray *)indexPaths;
-- (void)manifest:(FSQCellManifest *)manifest didReloadCellsAtIndexPaths:(NSArray *)indexPaths;
+- (void)manifest:(FSQCellManifest *)manifest willReloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
+- (void)manifest:(FSQCellManifest *)manifest didReloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
 
-- (void)manifest:(FSQCellManifest *)manifest willInsertSectionRecords:(NSArray *)sectionRecords atIndex:(NSInteger)index;
-- (void)manifest:(FSQCellManifest *)manifest didInsertSectionRecords:(NSArray *)sectionRecords atIndexes:(NSIndexSet *)indexes;
+- (void)manifest:(FSQCellManifest *)manifest willInsertSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords atIndex:(NSInteger)index;
+- (void)manifest:(FSQCellManifest *)manifest didInsertSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords atIndexes:(NSIndexSet *)indexes;
 
 - (void)manifest:(FSQCellManifest *)manifest willMoveSectionRecordAtIndex:(NSInteger)initialIndex toIndex:(NSInteger)targetIndex;
 - (void)manifest:(FSQCellManifest *)manifest didMoveSectionRecordAtIndex:(NSInteger)initialIndex toIndex:(NSInteger)targetIndex;
 
-- (void)manifest:(FSQCellManifest *)manifest willReplaceSectionRecordsAtIndexes:(NSArray *)indexes withRecords:(NSArray *)sectionRecords;
-- (void)manifest:(FSQCellManifest *)manifest didReplaceSectionRecordsAtIndexes:(NSArray *)indexes withRecords:(NSArray *)newSectionRecords replacedRecords:(NSArray *)originalSectionRecords;
+- (void)manifest:(FSQCellManifest *)manifest willReplaceSectionRecordsAtIndexes:(NSArray<NSNumber *> *)indexes withRecords:(NSArray<FSQSectionRecord *> *)sectionRecords;
+- (void)manifest:(FSQCellManifest *)manifest didReplaceSectionRecordsAtIndexes:(NSArray<NSNumber *> *)indexes withRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords replacedRecords:(NSArray<FSQSectionRecord *> *)originalSectionRecords;
 
 - (void)manifest:(FSQCellManifest *)manifest willRemoveSectionRecordsAtIndexes:(NSIndexSet *)indexes;
 - (void)manifest:(FSQCellManifest *)manifest didRemoveSectionRecordsAtIndexes:(NSIndexSet *)indexes;
@@ -370,7 +370,7 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
 
 /**
  If implemented, the return value of this method is used to determine the maximum size of cells instead
- of using cellRecord's maximum[Height/Width] properties or the defaultMaximumCellSizeForManifest: method. 
+ of using the defaultMaximumCellSizeForManifest: method. 
  
  @param indexPath  The index path of the cell whose size needs to be calculated.
  @param manifest   The manifest that is managing this cell.
