@@ -81,7 +81,7 @@
         return NO;
     }
     
-    return (([self.model isEqual:anotherCellRecord] || (!self.model && !anotherCellRecord.model))
+    return (([self.model isEqual:anotherCellRecord.model] || (!self.model && !anotherCellRecord.model))
             && (self.cellClass == anotherCellRecord.cellClass || (!self.cellClass && !anotherCellRecord.cellClass))
             && ([self.reuseIdentifier isEqualToString:anotherCellRecord.reuseIdentifier] || (!self.reuseIdentifier && !anotherCellRecord.reuseIdentifier))
             && (!!self.onConfigure == !!anotherCellRecord.onConfigure)

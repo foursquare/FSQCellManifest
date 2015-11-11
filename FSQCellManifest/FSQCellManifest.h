@@ -41,6 +41,20 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
     FSQViewReloadCellSelectionStrategyMaintainSelectedRecords,
 };
 
+/**
+ Methods about headers which include an indexPath will use this value for the row index.
+ 
+ You can use this to distinguish header index paths from footer or normal cell paths.
+ */
+extern const NSInteger kRowIndexForHeaderIndexPaths;
+
+/**
+ Methods about footers which include an indexPath will use this value for the row index.
+ 
+ You can use this to distinguish footer index paths from header or normal cell paths.
+ */
+extern const NSInteger kRowIndexForFooterIndexPaths;
+
 @interface FSQCellManifest : NSObject <NSFastEnumeration, UIScrollViewDelegate>
 
 /**
@@ -107,6 +121,13 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  @note A strong reference is retained to the objects.
  */
 @property (nonatomic, readonly) NSArray *plugins;
+
+/**
+ An array of FSQSectionRecord objects that represent the invididual sections in a table view or collection view.
+ Setting this property is equivalent to calling `setSectionRecords:selectionStrategy:`
+ with a selection strategy of FSQViewReloadCellSelectionStrategyDeselectAll.
+ */
+@property (nonatomic) NSArray<FSQSectionRecord *> *sectionRecords;
 
 /**
  Controls whether the manifest methods that alter its records will automatically call through to the
@@ -180,13 +201,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  @param sectionRecords    An array of FSQSectionRecord objects. The array will be copied.
  @param selectionStrategy A hint to the manifest on what to do with any existing selected rows.
  */
-- (void)setSectionRecords:(NSArray *)sectionRecords
+- (void)setSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords
         selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy;
-
-/**
- Convenience method for setSectionRecords with a selection strategy of FSQViewReloadCellSelectionStrategyDeselectAll
- */
-- (void)setSectionRecords:(NSArray *)sectionRecords;
 
 /**
  Accessor for getting individual section records.
@@ -235,7 +251,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return An array of NSIndexPaths of the newly inserted cellRecords.
  */
-- (NSArray *)insertCellRecords:(NSArray *)cellRecords atIndexPath:(NSIndexPath *)indexPath;
+- (NSArray<NSIndexPath *> *)insertCellRecords:(NSArray<FSQCellRecord *> *)cellRecords 
+                                  atIndexPath:(NSIndexPath *)indexPath;
 
 /**
  Insert new section records in order starting at the given index without animation.
@@ -249,7 +266,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return An index set containing the indexes of the newly inserted sectionRecords.
  */
-- (NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecords atIndex:(NSInteger)index;
+- (NSIndexSet *)insertSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords 
+                             atIndex:(NSInteger)index;
 
 /**
  Move a cell record at one index path to another.
@@ -264,7 +282,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return YES if the records were successfully moved, NO if one or both of the index paths were invalid.
  */
-- (BOOL)moveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath toIndexPath:(NSIndexPath *)targetIndexPath;
+- (BOOL)moveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath 
+                      toIndexPath:(NSIndexPath *)targetIndexPath;
 
 /**
  Move a section record at one index to another.
@@ -277,7 +296,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return YES if the records were successfully moved, NO if one or both of the indexes were invalid.
  */
-- (BOOL)moveSectionRecordAtIndex:(NSInteger)initialIndex toIndex:(NSInteger)targetIndex;
+- (BOOL)moveSectionRecordAtIndex:(NSInteger)initialIndex 
+                         toIndex:(NSInteger)targetIndex;
 
 /**
  Remove cell records at the specified index paths.
@@ -293,7 +313,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  @return An array of NSIndexPath objects that were actually removed. It does not include any invalid index paths.
  It also does not include any index paths in a section that was entirely removed if shouldRemoveEmptySections is YES.
  */
-- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths removeEmptySections:(BOOL)shouldRemoveEmptySections;
+- (NSArray<NSIndexPath *> *)removeCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths 
+                                      removeEmptySections:(BOOL)shouldRemoveEmptySections;
 
 /**
  Remove sections at the specified indexes.
@@ -320,7 +341,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return The actual array of index paths that were replaced, not including any invalid paths.
  */
-- (NSArray *)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withCellRecords:(NSArray *)newCellRecords;
+- (NSArray<NSIndexPath *> *)replaceCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths 
+                                           withCellRecords:(NSArray<FSQCellRecord *> *)newCellRecords;
 
 /**
  Replace section records with different records.
@@ -335,7 +357,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return A set of indexes that were actually replaced, not including any invalid indexes.
  */
-- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes withSectionRecords:(NSArray *)newSectionRecords;
+- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes 
+                            withSectionRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords;
 
 /**
  Does either tableView or collectionView reload data method as appropriate and informs manifest delegates and plugins.
@@ -356,7 +379,7 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @param indexPaths Index paths of cells to reload.
  */
-- (void)reloadCellsAtIndexPaths:(NSArray *)indexPaths;
+- (void)reloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
 
 /**
  Calls appropriate method on managed view to reload the specified indexes and informs manifest delegates and plugins. 
@@ -380,6 +403,32 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  is a table or collection view manifest.
  */
 - (NSIndexPath *)indexPathForRowOrItem:(NSInteger)rowOrItem inSection:(NSInteger)section;
+
+/**
+ Will tell you whether the record at the specified index path is able to be highlighted, based on the 
+ current manifest configuration
+ 
+ The corresponding UIKit delegate callback for this method is handled for you, but if you would like to know this
+ data for your own purposes you can call this method.
+ 
+ @param indexPath Index path which you would like to know about.
+ 
+ @return YES if the record can highlight, NO if it cannot.
+ */
+- (BOOL)recordShouldHighlightAtIndexPath:(NSIndexPath *)indexPath;
+
+/**
+ Will tell you whether the record at the specified index path is able to be selected, based on the 
+ current manifest configuration
+ 
+ The corresponding UIKit delegate callback for this method is handled for you, but if you would like to know this
+ data for your own purposes you can call this method.
+ 
+ @param indexPath Index path which you would like to know about.
+ 
+ @return YES if the record can be selected, NO if it cannot.
+ */
+- (BOOL)recordShouldSelectAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
@@ -418,7 +467,9 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return An array of NSIndexPaths of the newly inserted cellRecords
  */
-- (NSArray *)insertCellRecords:(NSArray *)cellRecords atIndexPath:(NSIndexPath *)indexPath withAnimation:(UITableViewRowAnimation)animation;
+- (NSArray<NSIndexPath *> *)insertCellRecords:(NSArray<FSQCellRecord *> *)cellRecords 
+                                  atIndexPath:(NSIndexPath *)indexPath 
+                                withAnimation:(UITableViewRowAnimation)animation;
 
 /**
  Insert new section records in order starting at the given index with a table view row animation.
@@ -433,7 +484,9 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return An index set containing the indexes of the newly inserted sectionRecords.
  */
-- (NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecords atIndex:(NSInteger)index withAnimation:(UITableViewRowAnimation)animation;
+- (NSIndexSet *)insertSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords 
+                             atIndex:(NSInteger)index
+                       withAnimation:(UITableViewRowAnimation)animation;
 
 /**
  Remove cell records at the specified index paths.
@@ -449,7 +502,9 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  @return An array of NSIndexPath objects that were actually removed. It does not include any invalid index paths.
  It also does not include any index paths in a section that was entirely removed if shouldRemoveEmptySections is YES.
  */
-- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths withAnimation:(UITableViewRowAnimation)animation removeEmptySections:(BOOL)shouldRemoveEmptySections;
+- (NSArray<NSIndexPath *> *)removeCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths 
+                                            withAnimation:(UITableViewRowAnimation)animation 
+                                      removeEmptySections:(BOOL)shouldRemoveEmptySections;
 
 /**
  Remove sections at the specified indexes.
@@ -461,7 +516,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return YES if sections were removed. NO if any of the indexes were invalid.
  */
-- (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes withAnimation:(UITableViewRowAnimation)animation;
+- (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes 
+                        withAnimation:(UITableViewRowAnimation)animation;
 
 /**
  Replace cell records with a different records with a table view row animation.
@@ -477,7 +533,9 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return The actual array of index paths that were replaced, not including any invalid paths.
  */
-- (NSArray *)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withCellRecords:(NSArray *)newCellRecords withAnimation:(UITableViewRowAnimation)animation;
+- (NSArray<NSIndexPath *> *)replaceCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths 
+                                           withCellRecords:(NSArray<FSQCellRecord *> *)newCellRecords
+                                             withAnimation:(UITableViewRowAnimation)animation;
 
 /**
  Replace section records with different records with a table view row animation.
@@ -493,7 +551,9 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @return A set of indexes that were actually replaced, not including any invalid indexes.
  */
-- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes withSectionRecords:(NSArray *)newSectionRecords withAnimation:(UITableViewRowAnimation)animation;
+- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes 
+                            withSectionRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords
+                                 withAnimation:(UITableViewRowAnimation)animation;
 
 /**
  Calls appropriate method on managed view to reload the specified index paths and informs manifest 
@@ -506,7 +566,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @param indexPaths Index paths of cells to reload.
  */
-- (void)reloadCellsAtIndexPaths:(NSArray *)indexPaths withAnimation:(UITableViewRowAnimation)animation;
+- (void)reloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths 
+                  withAnimation:(UITableViewRowAnimation)animation;
 
 /**
  Calls appropriate method on managed view to reload the specified indexes and informs manifest delegates and plugins. 
@@ -518,7 +579,8 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
  
  @param indexes Indexes of sections to reload.
  */
-- (void)reloadSectionsAtIndexes:(NSIndexSet *)indexes withAnimation:(UITableViewRowAnimation)animation;
+- (void)reloadSectionsAtIndexes:(NSIndexSet *)indexes 
+                  withAnimation:(UITableViewRowAnimation)animation;
 
 
 // The following table view delegate and data source methods are implemented by the manifest
@@ -570,6 +632,7 @@ typedef NS_ENUM(NSInteger, FSQViewReloadCellSelectionStrategy) {
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section NS_REQUIRES_SUPER;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section NS_REQUIRES_SUPER;
 
 // Data source methods
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
