@@ -26,9 +26,9 @@ Setup
 If your minimum iOS version requirement is 8.0 or greater, Carthage is the recommended way to integrate FSQCellManifest with your app.
 Add `github "foursquare/FSQCellManifest"` to your Cartfile and follow the instructions from [Carthage's README](https://github.com/Carthage/Carthage) for adding Carthage-built frameworks to your project.
 
-## Cocoapods
+## CocoaPods
 
-If you use Cocoapods, you can add `pod 'FSQCellManifest', '~> [desired version here]'` to your Podfile. Further instructions on setting up and using Cocoapods can be found on [their website](https://cocoapods.org)
+If you use CocoaPods, you can add `pod 'FSQCellManifest', '~> [desired version here]'` to your Podfile. Further instructions on setting up and using CocoaPods can be found on [their website](https://cocoapods.org)
 
 ## Manual Installation
 
@@ -36,7 +36,7 @@ You can also simply add the objc files in the `FSQCellManifest` directoryto your
 
 ## FSQMessageForwarder
 
-FSQCellManifest also requires [FSQMessageForwarder](https://github.com/foursquare/FSQMessageForwarder) to work. If you are using Carthage or Cocoapods, this should be taken care of for you automatically. Otherwise you will need to manually add that repo to your project as well (e.g. via git submodules or manually copying the files into your repo).
+FSQCellManifest also requires [FSQMessageForwarder](https://github.com/foursquare/FSQMessageForwarder) to work. If you are using Carthage or CocoaPods, this should be taken care of for you automatically. Otherwise you will need to manually add that repo to your project as well (e.g. via git submodules or manually copying the files into your repo).
 
 Example App
 ===========
