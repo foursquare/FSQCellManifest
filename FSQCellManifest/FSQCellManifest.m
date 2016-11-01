@@ -420,22 +420,20 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
     
     FSQSectionRecord *initialSectionRecord = [self sectionRecordAtIndex:initialIndexPath.section];
-    FSQSectionRecord *targetSectionRecord;
+    FSQSectionRecord *targetSectionRecord = [self sectionRecordAtIndex:targetIndexPath.section];
     NSInteger intitialCellIndex = [self rowOrItemIndexForIndexPath:initialIndexPath];
     NSInteger targetCellIndex = [self rowOrItemIndexForIndexPath:targetIndexPath];
-    NSInteger numberofTargetSectionRecordsAfterRemoval;
+    NSInteger numberofTargetSectionRecordsAfterMove;
     
     if (initialIndexPath.section == targetIndexPath.section) {
-        targetSectionRecord = initialSectionRecord;
-        numberofTargetSectionRecordsAfterRemoval = [targetSectionRecord numberOfCellRecords] - 1;
+        numberofTargetSectionRecordsAfterMove = [targetSectionRecord numberOfCellRecords];
     }
     else {
-        targetSectionRecord = [self sectionRecordAtIndex:initialIndexPath.section];        
-        numberofTargetSectionRecordsAfterRemoval = [targetSectionRecord numberOfCellRecords];
+        numberofTargetSectionRecordsAfterMove = [targetSectionRecord numberOfCellRecords] + 1;
     }
     
     if (!(intitialCellIndex < [initialSectionRecord numberOfCellRecords]) 
-        || targetCellIndex > numberofTargetSectionRecordsAfterRemoval) {
+        || targetCellIndex > numberofTargetSectionRecordsAfterMove) {
         return NO;
     }
     
