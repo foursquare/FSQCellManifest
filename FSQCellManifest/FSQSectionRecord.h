@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class FSQCellRecord, FSQCellManifest;
 
 @interface FSQSectionRecord : NSObject <NSFastEnumeration>
@@ -18,17 +20,17 @@
  
  @note Setting a header for a collection view will do nothing unless the collection view's layout supports headers.
  */
-@property (nonatomic, retain) FSQCellRecord *header;
+@property (nonatomic, retain, nullable) FSQCellRecord *header;
 
 /**
- An optional footer for this section. 
+ An optional footer for this section.
  
  For a UITableView, the cellClass should be a UITableViewHeaderFooterView subclass.
  For a UICollectionView, the cellClass should be a UICollectionReusableView subclass.
  
  @note Setting a footer for a collection view will do nothing unless the collection view's layout supports footers.
  */
-@property (nonatomic, retain) FSQCellRecord *footer;
+@property (nonatomic, retain, nullable) FSQCellRecord *footer;
 
 /**
  An array of FSQCellRecord objects that correspond to the rows or items in a table view or collection view section.
@@ -38,7 +40,7 @@
  @note To update a FSQSectionRecord that is already on a FSQCellManifest,
  do not set this property. Instead, use the insertion/removal methods in FSQCellManifest.
  */
-@property (nonatomic, copy) NSArray<FSQCellRecord *> *cellRecords;
+@property (nonatomic, copy, nullable) NSArray<FSQCellRecord *> *cellRecords;
 
 /**
  Insets for this section in a collection view.
@@ -51,10 +53,10 @@
 @property (nonatomic) UIEdgeInsets collectionViewSectionInset;
 
 /**
- This contents of this dictionary are not used internally by the manifest classes. 
+ This contents of this dictionary are not used internally by the manifest classes.
  You can use it to attach arbitrary data to the cell record for your own later use.
  */
-@property (nonatomic, readonly) NSMutableDictionary *userInfo;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, id> *userInfo;
 
 /**
  The number of records in this section
@@ -64,7 +66,7 @@
 /**
  The cell record in this section at the given index, or nil if the index is out of bounds.
  */
-- (FSQCellRecord *)cellRecordAtIndex:(NSInteger)index;
+- (nullable FSQCellRecord *)cellRecordAtIndex:(NSInteger)index;
 
 /**
  Convenience initializer with commonly set properties as method parameters
@@ -78,8 +80,8 @@
  @return A new FSQSectionRecord object with the given properties set.
  */
 - (instancetype)initWithCellRecords:(NSArray<FSQCellRecord *> *)cellRecords
-                             header:(FSQCellRecord *)header
-                             footer:(FSQCellRecord *)footer;
+                             header:(nullable FSQCellRecord *)header
+                             footer:(nullable FSQCellRecord *)footer;
 
 /**
  Used to determine if two records are equivalent.
@@ -97,3 +99,5 @@
 - (BOOL)isEqualToSectionRecord:(FSQSectionRecord *)anotherSectionRecord;
 
 @end
+
+NS_ASSUME_NONNULL_END

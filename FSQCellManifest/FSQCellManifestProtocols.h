@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class FSQCellRecord, FSQSectionRecord, FSQCellManifest, FSQTableViewCellManifest, FSQCollectionViewCellManifest;
 
 /**
@@ -35,7 +37,7 @@ typedef void (^FSQCellRecordConfigBlock)(id cell, NSIndexPath *indexPath, FSQCel
  This block property is called when a cell is selected in the table or collection view.
  
  You can set this block on a FSQCellRecord to do an action when the cell is selected. Alternatively if many
- cells in the view do the same or similar code when selected, you may want to use 
+ cells in the view do the same or similar code when selected, you may want to use
  FSQCellManifestRecordSelectionDelegate methods.
  
  
@@ -99,7 +101,7 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
 @protocol FSQCellManifestCollectionViewCellProtocol  <FSQCellManifestCellProtocol>
 
 /**
- This method will be called on each cell class in a collection view manifest to determine the height of the cell to 
+ This method will be called on each cell class in a collection view manifest to determine the height of the cell to
  report to UICollectionView.
  
  The class should use the passed in model object to determine the size an instance of itself rendering that model
@@ -199,9 +201,9 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  @note This callback is not sent for views created/dequeued from header/footer records.
  */
 - (void)manifest:(FSQCellManifest *)manifest willConfigureCell:(id)cell
-                                                     withModel:(id)model
-                                                   atIndexPath:(NSIndexPath *)indexPath
-                                                        record:(FSQCellRecord *)cellRecord;
+       withModel:(id)model
+     atIndexPath:(NSIndexPath *)indexPath
+          record:(FSQCellRecord *)cellRecord;
 
 /**
  If implemented, your delegate will receive this callback when a cell is created or dequeued,
@@ -215,15 +217,15 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  @param model      The model the cell was configured with.
  @param cell       The cell that was created/dequeued. It will be a UITableViewCell or UICollectionViewCell subclass.
  @param indexPath  The indexPath that this cell will appear at.
-
+ 
  @param cellRecord The cell record that is generating thi cell.
  
  @note This callback is not sent for views created/dequeued from header/footer records.
  */
-- (void)manifest:(FSQCellManifest *)manifest didConfigureCell:(id)cell 
-                                                    withModel:(id)model
-                                                  atIndexPath:(NSIndexPath *)indexPath
-                                                       record:(FSQCellRecord *)cellRecord;
+- (void)manifest:(FSQCellManifest *)manifest didConfigureCell:(id)cell
+       withModel:(id)model
+     atIndexPath:(NSIndexPath *)indexPath
+          record:(FSQCellRecord *)cellRecord;
 
 /**
  If implemented, your delegate will receive this callback when a header view is created or dequeued,
@@ -235,15 +237,15 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  
  @param manifest   The manifest that is managing this view.
  @param model      The model the view will be configured with.
- @param view       The view that was created/dequeued. 
-                   It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
+ @param view       The view that was created/dequeued.
+ It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
  @param index      The section index that this header will appear at.
  @param cellRecord The cell record that is generating this view.
  */
-- (void)manifest:(FSQCellManifest *)manifest willConfigureHeader:(id)view 
-                                                       withModel:(id)model
-                                                         atIndex:(NSInteger)index
-                                                          record:(FSQCellRecord *)cellRecord;
+- (void)manifest:(FSQCellManifest *)manifest willConfigureHeader:(id)view
+       withModel:(id)model
+         atIndex:(NSInteger)index
+          record:(FSQCellRecord *)cellRecord;
 
 /**
  If implemented, your delegate will receive this callback when a header view is created or dequeued,
@@ -254,16 +256,16 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  for all headers in the manifest, instead of attaching an onConfigure block to each record.
  
  @param manifest   The manifest that is managing this view.
- @param view       The view that was created/dequeued. 
-                   It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
+ @param view       The view that was created/dequeued.
+ It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
  @param index      The section index that this header will appear at.
  @param model      The model the view was configured with.
  @param cellRecord The cell record that is generating this view.
  */
-- (void)manifest:(FSQCellManifest *)manifest didConfigureHeader:(id)view 
-                                                      withModel:(id)model
-                                                        atIndex:(NSInteger)index
-                                                         record:(FSQCellRecord *)cellRecord;
+- (void)manifest:(FSQCellManifest *)manifest didConfigureHeader:(id)view
+       withModel:(id)model
+         atIndex:(NSInteger)index
+          record:(FSQCellRecord *)cellRecord;
 
 /**
  If implemented, your delegate will receive this callback when a footer view is created or dequeued,
@@ -272,18 +274,18 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  
  Depending on your views' design, it may be more appropriate to use a callback to do extra configuration globally
  for all footers in the manifest, instead of attaching an onConfigure block to each record.
-
+ 
  @param manifest   The manifest that is managing this view.
- @param view       The view that was created/dequeued. 
-                   It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
+ @param view       The view that was created/dequeued.
+ It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
  @param index      The section index that this footer will appear at.
  @param model      The model the view will be configured with.
  @param cellRecord The cell record that is generating this view.
  */
-- (void)manifest:(FSQCellManifest *)manifest willConfigureFooter:(id)view 
-                                                       withModel:(id)model
-                                                         atIndex:(NSInteger)index
-                                                          record:(FSQCellRecord *)cellRecord;
+- (void)manifest:(FSQCellManifest *)manifest willConfigureFooter:(id)view
+       withModel:(id)model
+         atIndex:(NSInteger)index
+          record:(FSQCellRecord *)cellRecord;
 
 /**
  If implemented, your delegate will receive this callback when a footer view is created or dequeued,
@@ -294,16 +296,16 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  for all footers in the manifest, instead of attaching an onConfigure block to each record.
  
  @param manifest   The manifest that is managing this view.
- @param view       The view that was created/dequeued. 
-                   It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
- @param index      The section index that this footer will appear at. 
+ @param view       The view that was created/dequeued.
+ It will be a UITableViewHeaderFooterView or UICollectionReusableView subclass.
+ @param index      The section index that this footer will appear at.
  @param model      The model the view was configured with.
  @param cellRecord The cell record that is generating this view.
  */
-- (void)manifest:(FSQCellManifest *)manifest didConfigureFooter:(id)view 
-                                                      withModel:(id)model
-                                                        atIndex:(NSInteger)index
-                                                         record:(FSQCellRecord *)cellRecord;
+- (void)manifest:(FSQCellManifest *)manifest didConfigureFooter:(id)view
+       withModel:(id)model
+         atIndex:(NSInteger)index
+          record:(FSQCellRecord *)cellRecord;
 @end
 
 /**
@@ -325,8 +327,8 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  
  @note This callback is not sent for header/footer records.
  */
-- (void)manifest:(FSQCellManifest *)manifest didSelectCellAtIndexPath:(NSIndexPath *)indexPath 
-                                                           withRecord:(FSQCellRecord *)cellRecord;
+- (void)manifest:(FSQCellManifest *)manifest didSelectCellAtIndexPath:(NSIndexPath *)indexPath
+      withRecord:(FSQCellRecord *)cellRecord;
 
 /**
  If implemented, your delegate will receive this callback when a cell is about to be selected,
@@ -338,8 +340,8 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  
  @note This callback is not sent for header/footer records.
  */
-- (void)manifest:(FSQCellManifest *)manifest willSelectCellAtIndexPath:(NSIndexPath *)indexPath 
-                                                            withRecord:(FSQCellRecord *)cellRecord;
+- (void)manifest:(FSQCellManifest *)manifest willSelectCellAtIndexPath:(NSIndexPath *)indexPath
+      withRecord:(FSQCellRecord *)cellRecord;
 @end
 
 /**
@@ -350,7 +352,7 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
 
 /**
  If implemented, the return value of this method is used to determine the size of cells instead
- of an automatic call to the cells' heightForFSQCellRecordModel:maximumSize 
+ of an automatic call to the cells' heightForFSQCellRecordModel:maximumSize
  or sizeForFSQCellRecordModel:maximumSize: methods.
  
  
@@ -359,18 +361,18 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  @param manifest    The manifest that is managing this cell.
  @param cellRecord  The cell record for this cell.
  @param maximumSize The maximum size that this cell should be.
-
- @return The size that the cell should be created as. If you are using a table view manifest, the width field of the 
-         return value is ignored. UITableViewCells are always created with the width of the table view.
+ 
+ @return The size that the cell should be created as. If you are using a table view manifest, the width field of the
+ return value is ignored. UITableViewCells are always created with the width of the table view.
  */
-- (CGSize)sizeForCellAtIndexPath:(NSIndexPath *)indexPath 
-                    withManifest:(FSQCellManifest *)manifest 
+- (CGSize)sizeForCellAtIndexPath:(NSIndexPath *)indexPath
+                    withManifest:(FSQCellManifest *)manifest
                           record:(FSQCellRecord *)cellRecord
                      maximumSize:(CGSize)maximumSize;
 
 /**
  If implemented, the return value of this method is used to determine the maximum size of cells instead
- of using the defaultMaximumCellSizeForManifest: method. 
+ of using the defaultMaximumCellSizeForManifest: method.
  
  @param indexPath  The index path of the cell whose size needs to be calculated.
  @param manifest   The manifest that is managing this cell.
@@ -379,14 +381,14 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
  @return The maximum size this cell should be, passed through to size calculation methods.
  
  @note UITableViewCells will always be created as the width of the table view, but the width field of the returned
-       size will still be used for its height calculation.
+ size will still be used for its height calculation.
  */
-- (CGSize)maximumSizeForCellAtIndexPath:(NSIndexPath *)indexPath 
-                           withManifest:(FSQCellManifest *)manifest 
+- (CGSize)maximumSizeForCellAtIndexPath:(NSIndexPath *)indexPath
+                           withManifest:(FSQCellManifest *)manifest
                                  record:(FSQCellRecord *)cellRecord;
 
 /**
- This is the default maximum size that will be passed to cell, header, and footer records' 
+ This is the default maximum size that will be passed to cell, header, and footer records'
  sizeForFSQCellRecordModel:maximumSize: method.
  
  If not implemented, defaults to  { tableView.width, CGFLOAT_MAX } for table views
@@ -402,3 +404,5 @@ typedef void (^FSQCellRecordSelectBlock)(NSIndexPath *indexPath, FSQCellManifest
 - (void)wasRemovedFromManifest:(FSQCellManifest *)manifest;
 - (void)manifest:(FSQCellManifest *)manifest managedViewDidChange:(UIScrollView *)newManagedView oldView:(UIScrollView *)oldManagedView;
 @end
+
+NS_ASSUME_NONNULL_END

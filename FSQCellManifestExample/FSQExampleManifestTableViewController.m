@@ -12,6 +12,8 @@
 
 @import FSQCellManifest;
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Note: In a real app, use NSCalendar instead of macros like these :)
 #define TIME_INTERVAL_ONE_MINUTE ((NSTimeInterval) 60)
 #define TIME_INTERVAL_ONE_HOUR   ((NSTimeInterval) (TIME_INTERVAL_ONE_MINUTE * 60))
@@ -26,10 +28,10 @@
 @end
 
 @interface FSQExampleManifestTableViewController () <UITableViewDelegate>
-@property (nonatomic, retain) UITableView *tableView;
-@property (nonatomic, retain) FSQTableViewCellManifest *manifest;
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) FSQTableViewCellManifest *manifest;
 
-@property (nonatomic, copy) NSArray *userModels;
+@property (nonatomic, copy) NSArray<FSQExampleUserModel *> *userModels;
 @end
 
 @implementation FSQExampleManifestTableViewController
@@ -51,14 +53,14 @@
 }
 
 - (void)createExampleModels {
-
+    
     // Generate some random user models to show in our table
     
     NSArray *possibleFavoriteColors = @[
-                                        [UIColor redColor], 
-                                        [UIColor greenColor], 
+                                        [UIColor redColor],
+                                        [UIColor greenColor],
                                         [UIColor blueColor],
-                                        [UIColor cyanColor], 
+                                        [UIColor cyanColor],
                                         [UIColor magentaColor],
                                         [UIColor orangeColor],
                                         [UIColor purpleColor],
@@ -88,12 +90,12 @@
     
     
     for (NSString *userName in exampleUserNames) {
-        [exampleUserModels addObject:[FSQExampleUserModel userWithName:userName 
-                                                              joinDate:[NSDate dateWithTimeIntervalSinceNow:-TIME_INTERVAL_DAYS(arc4random_uniform(3000))] 
+        [exampleUserModels addObject:[FSQExampleUserModel userWithName:userName
+                                                              joinDate:[NSDate dateWithTimeIntervalSinceNow:-TIME_INTERVAL_DAYS(arc4random_uniform(3000))]
                                                          favoriteColor:possibleFavoriteColors[arc4random_uniform((u_int32_t)possibleFavoriteColors.count)]
                                       ]];
     }
-
+    
     self.userModels = exampleUserModels;
 }
 
@@ -104,14 +106,14 @@
         [cellRecords addObject:[[FSQCellRecord alloc] initWithModel:user cellClass:[FSQExampleUserTableViewCell class] onConfigure:nil onSelection:nil]];
     }
     
-    FSQCellRecord *headerRecord = [[FSQCellRecord alloc] initWithModel:@"Current Users" 
-                                                             cellClass:[FSQExampleHeaderView class] 
+    FSQCellRecord *headerRecord = [[FSQCellRecord alloc] initWithModel:@"Current Users"
+                                                             cellClass:[FSQExampleHeaderView class]
                                                            onConfigure:nil
                                                            onSelection:nil];
     
     [self.manifest setSectionRecords:@[
-                                       [[FSQSectionRecord alloc] initWithCellRecords:cellRecords 
-                                                                              header:headerRecord 
+                                       [[FSQSectionRecord alloc] initWithCellRecords:cellRecords
+                                                                              header:headerRecord
                                                                               footer:nil]
                                        ]];
 }
@@ -129,3 +131,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

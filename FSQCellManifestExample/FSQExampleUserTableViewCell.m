@@ -11,6 +11,8 @@
 
 @import FSQCellManifest;
 
+NS_ASSUME_NONNULL_BEGIN
+
 static const CGFloat kLabelHorizontalPadding = 10;
 static const CGFloat kLabelVerticalPadding = 5;
 
@@ -23,8 +25,10 @@ static const CGFloat kLabelVerticalPadding = 5;
 @end
 
 @interface FSQExampleUserTableViewCell () <FSQCellManifestTableViewCellProtocol>
+
 @property (nonatomic, retain) UILabel *nameLabel;
 @property (nonatomic, retain) UILabel *joinDateLabel;
+
 @end
 
 @implementation FSQExampleUserTableViewCell
@@ -37,7 +41,7 @@ static const CGFloat kLabelVerticalPadding = 5;
     return [UIFont italicSystemFontOfSize:14];
 }
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier {
     if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
         self.nameLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         self.nameLabel.numberOfLines = 0;
@@ -55,7 +59,7 @@ static const CGFloat kLabelVerticalPadding = 5;
     return self;
 }
 
-+ (CGFloat)manifest:(id)manifest heightForModel:(FSQExampleUserModel *)user maximumSize:(CGSize)maximumSize indexPath:(NSIndexPath *)indexPath record:(FSQCellRecord *)record {
++ (CGFloat)manifest:(FSQCellManifest *)manifest heightForModel:(FSQExampleUserModel *)user maximumSize:(CGSize)maximumSize indexPath:(NSIndexPath *)indexPath record:(FSQCellRecord *)record {
     CGFloat maximumWidth = maximumSize.width - (kLabelHorizontalPadding * 2);
     
     CGFloat cellHeight = 0;
@@ -71,15 +75,15 @@ static const CGFloat kLabelVerticalPadding = 5;
     
     CGFloat maximumWidth = self.contentView.frame.size.width - (kLabelHorizontalPadding * 2);
     
-    self.nameLabel.frame = CGRectMake(kLabelHorizontalPadding, 
-                                      kLabelVerticalPadding, 
-                                      maximumWidth, 
+    self.nameLabel.frame = CGRectMake(kLabelHorizontalPadding,
+                                      kLabelVerticalPadding,
+                                      maximumWidth,
                                       [self.nameLabel.text heightForWidth:maximumWidth font:self.nameLabel.font]);
     
-    self.joinDateLabel.frame = CGRectMake(kLabelHorizontalPadding, 
-                                      CGRectGetMaxY(self.nameLabel.frame) + kLabelVerticalPadding, 
-                                      maximumWidth, 
-                                      [self.joinDateLabel.text heightForWidth:maximumWidth font:self.joinDateLabel.font]);
+    self.joinDateLabel.frame = CGRectMake(kLabelHorizontalPadding,
+                                          CGRectGetMaxY(self.nameLabel.frame) + kLabelVerticalPadding,
+                                          maximumWidth,
+                                          [self.joinDateLabel.text heightForWidth:maximumWidth font:self.joinDateLabel.font]);
 }
 
 - (void)manifest:(FSQCellManifest *)manifest configureWithModel:(FSQExampleUserModel *)user indexPath:(NSIndexPath *)indexPath record:(FSQCellRecord *)record {
@@ -93,8 +97,8 @@ static const CGFloat kLabelVerticalPadding = 5;
 @implementation FSQExampleUserModel (CellAdditions)
 
 - (NSString *)joinDateString{
-    return [NSString stringWithFormat:@"User since %@", [NSDateFormatter localizedStringFromDate:self.joinDate 
-                                                                                       dateStyle:NSDateFormatterLongStyle 
+    return [NSString stringWithFormat:@"User since %@", [NSDateFormatter localizedStringFromDate:self.joinDate
+                                                                                       dateStyle:NSDateFormatterLongStyle
                                                                                        timeStyle:NSDateFormatterNoStyle]];
 }
 
@@ -110,3 +114,5 @@ static const CGFloat kLabelVerticalPadding = 5;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

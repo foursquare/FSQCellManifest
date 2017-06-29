@@ -6,16 +6,18 @@
 
 #import "FSQCellRecord.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation FSQCellRecord {
-    NSNumber *_allowsHighlighting;
-    NSNumber *_allowsSelection;
-    NSMutableDictionary *_userInfo;
+    NSNumber *_Nullable _allowsHighlighting;
+    NSNumber *_Nullable _allowsSelection;
+    NSMutableDictionary<NSString *, id> *_Nullable _userInfo;
 }
 
-- (instancetype)initWithModel:(id)model 
+- (instancetype)initWithModel:(id)model
                     cellClass:(Class)cellClass
-                  onConfigure:(FSQCellRecordConfigBlock)onConfigure 
-                  onSelection:(FSQCellRecordSelectBlock)onSelection {
+                  onConfigure:(nullable FSQCellRecordConfigBlock)onConfigure
+                  onSelection:(nullable FSQCellRecordSelectBlock)onSelection {
     if ((self = [super init])) {
         self.model = model;
         self.cellClass = cellClass;
@@ -92,7 +94,7 @@
             );
 }
 
-- (NSMutableDictionary *)userInfo {
+- (NSMutableDictionary<NSString *, id> *)userInfo {
     if (!_userInfo) {
         _userInfo = [NSMutableDictionary new];
     }
@@ -101,3 +103,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
