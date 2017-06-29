@@ -213,7 +213,7 @@ extern const NSInteger kRowIndexForFooterIndexPaths;
  
  @return The section record at that index, or nil if the index is out of bounds.
  */
-- (FSQSectionRecord *)sectionRecordAtIndex:(NSInteger)index;
+- (nullable FSQSectionRecord *)sectionRecordAtIndex:(NSInteger)index;
 
 /**
  Accessor for getting individual cell records.
@@ -222,7 +222,7 @@ extern const NSInteger kRowIndexForFooterIndexPaths;
  
  @return The section record at that index, or nil if the index path is out of bounds.
  */
-- (FSQCellRecord *)cellRecordAtIndexPath:(NSIndexPath *)indexPath;
+- (nullable FSQCellRecord *)cellRecordAtIndexPath:(NSIndexPath *)indexPath;
 
 /**
  Accessor for the getting the current number of sections.
@@ -589,10 +589,10 @@ extern const NSInteger kRowIndexForFooterIndexPaths;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section NS_REQUIRES_SUPER;
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section NS_REQUIRES_SUPER;
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section NS_REQUIRES_SUPER;
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section NS_REQUIRES_SUPER;
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section NS_REQUIRES_SUPER;
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section NS_REQUIRES_SUPER;
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
+- (nullable NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath NS_REQUIRES_SUPER;
 
 // Data source methods

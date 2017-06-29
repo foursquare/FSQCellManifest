@@ -191,7 +191,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (FSQSectionRecord *)sectionRecordAtIndex:(NSInteger)index {
+- (nullable FSQSectionRecord *)sectionRecordAtIndex:(NSInteger)index {
     if (index < [_sectionRecords count]
         && index >= 0) {
         return _sectionRecords[index];
@@ -201,7 +201,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (FSQCellRecord *)cellRecordAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable FSQCellRecord *)cellRecordAtIndexPath:(NSIndexPath *)indexPath {
     return [[self sectionRecordAtIndex:indexPath.section] cellRecordAtIndex:[self rowOrItemIndexForIndexPath:indexPath]];
 }
 
@@ -295,9 +295,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     [self setSectionRecords:sectionRecords selectionStrategy:FSQViewReloadCellSelectionStrategyDeselectAll];
 }
 
-- (NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert
-                   atIndexPath:(NSIndexPath *)indexPath
-            managedViewUpdates:(nullable void(^)(NSArray *insertedIndexPaths))managedViewUpdates {
+- (nullable NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert
+                            atIndexPath:(NSIndexPath *)indexPath
+                     managedViewUpdates:(nullable void(^)(NSArray *insertedIndexPaths))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -359,9 +359,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self insertCellRecords:cellRecordsToInsert atIndexPath:indexPath managedViewUpdates:nil];
 }
 
-- (NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecordsToInsert
-                             atIndex:(NSInteger)index
-                  managedViewUpdates:(nullable void(^)(NSIndexSet *insertedIndexes))managedViewUpdates {
+- (nullable NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecordsToInsert
+                                      atIndex:(NSInteger)index
+                           managedViewUpdates:(nullable void(^)(NSIndexSet *insertedIndexes))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -542,9 +542,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self moveSectionRecordAtIndex:initialIndex toIndex:targetIndex managedViewUpdates:nil];
 }
 
-- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths
-                       removeEmptySections:(BOOL)shouldRemoveEmptySections
-                        managedViewUpdates:(nullable void(^)(NSArray *removedIndexPaths, NSIndexSet *removedSectionIndexes))managedViewUpdates {
+- (nullable NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths
+                                removeEmptySections:(BOOL)shouldRemoveEmptySections
+                                 managedViewUpdates:(nullable void(^)(NSArray *removedIndexPaths, NSIndexSet *removedSectionIndexes))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -619,10 +619,12 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     NSIndexSet *sectionIndexesToRemove = [sectionIndexesToRemoveMutable copy];
     NSArray *removedCellIndexPaths = [removedCellIndexPathsMutable copy];
     
-    [self removeSectionRecordsAtIndexes:sectionIndexesToRemove shouldInformDelegates:NO managedViewUpdates:nil];
-    
-    if (managedViewUpdates && _automaticallyUpdateManagedView) {
-        managedViewUpdates(removedCellIndexPaths, sectionIndexesToRemove);
+    if (sectionIndexesToRemove) {
+        [self removeSectionRecordsAtIndexes:sectionIndexesToRemove shouldInformDelegates:NO managedViewUpdates:nil];
+        
+        if (managedViewUpdates && _automaticallyUpdateManagedView) {
+            managedViewUpdates(removedCellIndexPaths, sectionIndexesToRemove);
+        }
     }
     
     /**  Inform delegates  **/
@@ -1133,7 +1135,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [NSIndexPath indexPathForRow:rowOrItem inSection:section];
 }
 
-- (void)performBatchRecordModificationUpdates:(void (^)(void))updates {
+- (void)performBatchRecordModificationUpdates:(nullable void (^)(void))updates {
     
     if (updates) {
         [self.tableView beginUpdates];
@@ -1412,7 +1414,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if (tableView == self.tableView) {
         return [self viewForHeaderOrFooter:FSQCellRecordTypeHeader
                                     record:[self sectionRecordAtIndex:section].header
@@ -1424,7 +1426,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     if (tableView == self.tableView) {
         return [self viewForHeaderOrFooter:FSQCellRecordTypeFooter
                                     record:[self sectionRecordAtIndex:section].footer
@@ -1445,7 +1447,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.tableView) {
         if ([self recordShouldSelectAtIndexPath:indexPath]) {
             return indexPath;
@@ -1543,6 +1545,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         NSString *identifier = record.reuseIdentifier ?: NSStringFromClass(record.cellClass);
         
         if (!record || !identifier || !record.cellClass) {
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord"
+                                          userInfo:nil]);
             return nil;
         }
         
@@ -1615,7 +1620,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [NSIndexPath indexPathForItem:rowOrItem inSection:section];
 }
 
-- (void)performBatchRecordModificationUpdates:(void (^)(void))updates {
+- (void)performBatchRecordModificationUpdates:(nullable void (^)(void))updates {
     if (updates) {
         [self.collectionView performBatchUpdates:updates completion:nil];
     }
@@ -1800,6 +1805,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
         
         if (!record) {
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord"
+                                          userInfo:nil]);
             return nil;
         }
         
@@ -1849,6 +1857,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             NSString *identifier = record.reuseIdentifier ?: NSStringFromClass(record.cellClass);
             
             if (!identifier || !record.cellClass) {
+                @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                                reason:@"Attempting to initialize call with a bad or nil FSQCellRecord identifier or class"
+                                              userInfo:nil]);
                 return nil;
             }
             
