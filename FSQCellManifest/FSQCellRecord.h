@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  You must include a cellClass. All other parameters are optional.
  */
-- (instancetype)initWithModel:(id)model
+- (instancetype)initWithModel:(nullable id)model
                     cellClass:(Class)cellClass
                   onConfigure:(nullable FSQCellRecordConfigBlock)onConfigure
                   onSelection:(nullable FSQCellRecordSelectBlock)onSelection;
