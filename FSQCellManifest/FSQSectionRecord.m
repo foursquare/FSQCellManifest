@@ -8,15 +8,17 @@
 
 #import "FSQCellRecord.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation FSQSectionRecord {
-    NSArray *_cellRecords;
-    NSValue *_collectionViewSectionInsetPrivate;
-    NSMutableDictionary *_userInfo;
+    NSArray<FSQCellRecord *> *_cellRecords;
+    NSValue *_Nullable _collectionViewSectionInsetPrivate;
+    NSMutableDictionary<NSString *, id> *_Nullable _userInfo;
 }
 
-- (instancetype)initWithCellRecords:(NSArray *)cellRecords 
-                             header:(FSQCellRecord *)header 
-                             footer:(FSQCellRecord *)footer {
+- (instancetype)initWithCellRecords:(NSArray<FSQCellRecord *> *)cellRecords
+                             header:(nullable FSQCellRecord *)header
+                             footer:(nullable FSQCellRecord *)footer {
     if ((self = [super init])) {
         _cellRecords = [cellRecords copy];
         self.header = header;
@@ -29,7 +31,7 @@
     return [_cellRecords count];
 }
 
-- (FSQCellRecord *)cellRecordAtIndex:(NSInteger)index {
+- (nullable FSQCellRecord *)cellRecordAtIndex:(NSInteger)index {
     if (index < [_cellRecords count]
         && index >= 0) {
         return _cellRecords[index];
@@ -39,7 +41,7 @@
     }
 }
 
-- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])buffer count:(NSUInteger)len {
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id _Nonnull __unsafe_unretained [])buffer count:(NSUInteger)len {
     return [_cellRecords countByEnumeratingWithState:state objects:buffer count:len];
 }
 
@@ -56,7 +58,7 @@
     }
 }
 
-- (NSMutableDictionary *)userInfo {
+- (NSMutableDictionary<NSString *, id> *)userInfo {
     if (!_userInfo) {
         _userInfo = [NSMutableDictionary new];
     }
@@ -87,18 +89,20 @@
             );
 }
 
-- (NSArray *)cellRecords {
+- (nullable NSArray<FSQCellRecord *> *)cellRecords {
     if (_cellRecords) {
         return _cellRecords;
     }
     else {
-        return  @[];
+        return nil;
     }
 }
 
 // Exposed for internal use of other FSQCellManifest files only
-- (NSValue *)collectionViewSectionInsetPrivate {
+- (nullable NSValue *)collectionViewSectionInsetPrivate {
     return _collectionViewSectionInsetPrivate;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

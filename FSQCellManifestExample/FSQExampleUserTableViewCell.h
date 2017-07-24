@@ -8,6 +8,10 @@
 
 @import UIKit;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface FSQExampleUserTableViewCell : UITableViewCell
 
 @end
+
+NS_ASSUME_NONNULL_END

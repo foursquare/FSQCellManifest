@@ -8,6 +8,8 @@
 
 @import UIKit;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface FSQExampleUserModel : NSObject
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSDate   *joinDate;
@@ -16,3 +18,5 @@
 + (instancetype)userWithName:(NSString *)name joinDate:(NSDate *)joinDate favoriteColor:(UIColor *)favoriteColor;
 
 @end
+
+NS_ASSUME_NONNULL_END

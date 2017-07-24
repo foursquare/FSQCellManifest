@@ -8,10 +8,12 @@
 
 #import "FSQExampleUserModel.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation FSQExampleUserModel
 
 + (instancetype)userWithName:(NSString *)name joinDate:(NSDate *)joinDate favoriteColor:(UIColor *)favoriteColor {
-    FSQExampleUserModel *user = [self new];
+    FSQExampleUserModel *user = [[self alloc] init];
     user.name = name;
     user.joinDate = joinDate;
     user.favoriteColor = favoriteColor;
@@ -19,3 +21,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

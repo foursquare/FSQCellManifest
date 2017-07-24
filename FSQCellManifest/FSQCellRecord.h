@@ -6,6 +6,8 @@
 
 #import "FSQCellManifestProtocols.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class FSQCellRecord, FSQCellManifest, FSQTableViewCellManifest, FSQCollectionViewCellManifest;
 
 @interface FSQCellRecord : NSObject
@@ -28,18 +30,18 @@
  * it must be a UITableViewHeaderFooterView subclass for header or footer records.
  
  If you are using the manifest for a UICollectionView then:
- * it must conform to FSQCellManifestCollectionViewCellProtocol   
+ * it must conform to FSQCellManifestCollectionViewCellProtocol
  * it must be a UICollectionViewCell subclass for "body" records
  * it must be a UICollectionReusableView subclass for header or footer records.
  */
 @property (nonatomic, retain) Class cellClass;
 
 /**
- If set, this block will be called when a cell is created or dequeued, 
+ If set, this block will be called when a cell is created or dequeued,
  after the cell's configureWithFSQCellRecordModel: method is called,
- and before the manifest delegate's didConfigureCell:atIndexPath:withManifest:record: method is called 
+ and before the manifest delegate's didConfigureCell:atIndexPath:withManifest:record: method is called
  */
-@property (nonatomic, copy) FSQCellRecordConfigBlock onConfigure;
+@property (nonatomic, copy, nullable) FSQCellRecordConfigBlock onConfigure;
 
 /**
  If set, this method will be called when the cell is selected,
@@ -47,7 +49,7 @@
  
  If set, it also changes the default value of allowsHighlighting and allowsSelection to YES.
  */
-@property (nonatomic, copy) FSQCellRecordSelectBlock onSelection;
+@property (nonatomic, copy, nullable) FSQCellRecordSelectBlock onSelection;
 
 /**
  Controls whether this row is allowed to be highlighted/selected.
@@ -55,7 +57,7 @@
  If not set, and there is a select block, the cell will be highlightable. Otherwise
  the value of manifest.cellSelectionEnabledByDefault will be used.
  
- You can manually override this behavior by setting a value yourself 
+ You can manually override this behavior by setting a value yourself
  (e.g. if you are using the didSelectCell: delegate method instead of the onSelection block).
  
  @note Due to how UIKit works, cells that do not highlight cannot be selected (although for UITableView
@@ -73,7 +75,7 @@
  (e.g. if you want to have cells that highlight but cannot be selected)
  
  @note Most times when you want to make a cell be selectable or unselectable, you actually want to change
-        the allowsHighlighting value instead.
+ the allowsHighlighting value instead.
  */
 @property (nonatomic, assign) BOOL allowsSelection;
 
@@ -88,20 +90,20 @@
 @property (nonatomic, copy) NSString *reuseIdentifier;
 
 /**
- This contents of this dictionary are not used internally by the manifest classes. 
+ This contents of this dictionary are not used internally by the manifest classes.
  You can use it to attach arbitrary data to the cell record for your own later use.
  */
-@property (nonatomic, readonly) NSMutableDictionary *userInfo;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, id> *userInfo;
 
 /**
  Convenience initializer with the most commonly set properties as method parameters
  
  You must include a cellClass. All other parameters are optional.
  */
-- (instancetype)initWithModel:(id)model 
-                    cellClass:(Class)cellClass 
-                  onConfigure:(FSQCellRecordConfigBlock)onConfigure
-                  onSelection:(FSQCellRecordSelectBlock)onSelection;
+- (instancetype)initWithModel:(nullable id)model
+                    cellClass:(Class)cellClass
+                  onConfigure:(nullable FSQCellRecordConfigBlock)onConfigure
+                  onSelection:(nullable FSQCellRecordSelectBlock)onSelection;
 
 /**
  Used to determine if two records are equivalent.
@@ -124,3 +126,5 @@
 - (BOOL)isEqualToCellRecord:(FSQCellRecord *)anotherCellRecord;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -8,6 +8,8 @@
 
 @import FSQMessageForwarder;
 
+NS_ASSUME_NONNULL_BEGIN
+
 #pragma mark - Begin Private Headers, Types, and Constants
 
 const NSInteger kRowIndexForHeaderIndexPaths = -1;
@@ -61,8 +63,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     FSQCellManifestMessageForwarderEnumerator *_scrollViewDelegateForwarderEnumerator;
 }
 
-- (instancetype)initWithDelegate:(id)delegate 
-                         plugins:(NSArray *)plugins {
+- (instancetype)initWithDelegate:(nullable id)delegate
+                         plugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)plugins {
     if ((self = [super init])) {
         _sectionRecords = @[];
         _identifierCellClassMap = [NSMutableDictionary new];
@@ -83,19 +85,19 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     _scrollViewDelegateForwarderEnumerator.manifest = self;
 }
 
-- (void)addPluginsToForwarders:(NSArray *)plugins {    
+- (void)addPluginsToForwarders:(NSArray<id<FSQCellManifestPlugin>> *)plugins {
     for (FSQCellManifestMessageForwarderEnumerator *enumerator in [self messageForwarderEnumerators]) {
         [enumerator addPlugins:plugins];
     }
 }
 
-- (void)removePluginsFromForwarders:(NSArray *)plugins {
+- (void)removePluginsFromForwarders:(NSArray<id<FSQCellManifestPlugin>> *)plugins {
     for (FSQCellManifestMessageForwarderEnumerator *enumerator in [self messageForwarderEnumerators]) {
         [enumerator removePlugins:plugins];
     }
 }
 
-- (void)addPlugins:(NSArray *)plugins {
+- (void)addPlugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)plugins {
     if (!_plugins) {
         _plugins = plugins;
     }
@@ -113,7 +115,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     [self addPluginsToForwarders:plugins];
 }
 
-- (void)removePlugins:(NSArray *)plugins {
+- (void)removePlugins:(NSArray<id<FSQCellManifestPlugin>> *)plugins {
     NSMutableArray *mutablePlugins = [_plugins mutableCopy];
     [mutablePlugins removeObjectsInArray:plugins];
     _plugins = [mutablePlugins copy];
@@ -140,7 +142,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)setDelegate:(id)delegate {
+- (void)setDelegate:(nullable id)delegate {
     if (_delegate == delegate) {
         return;
     }
@@ -169,14 +171,14 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (void)performBatchRecordModificationUpdates:(void (^)(void))updates {
+- (void)performBatchRecordModificationUpdates:(nullable void (^)(void))updates {
     // Subclasses should override
     if (updates) {
         updates();
     }
 }
 
-- (void)performRecordModificationUpdatesWithoutUpdatingManagedView:(void (^)(void))updates {
+- (void)performRecordModificationUpdatesWithoutUpdatingManagedView:(nullable void (^)(void))updates {
     if (updates) {
         if (self.automaticallyUpdateManagedView) {
             self.automaticallyUpdateManagedView = NO;
@@ -189,7 +191,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (FSQSectionRecord *)sectionRecordAtIndex:(NSInteger)index {
+- (nullable FSQSectionRecord *)sectionRecordAtIndex:(NSInteger)index {
     if (index < [_sectionRecords count]
         && index >= 0) {
         return _sectionRecords[index];
@@ -199,7 +201,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (FSQCellRecord *)cellRecordAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable FSQCellRecord *)cellRecordAtIndexPath:(NSIndexPath *)indexPath {
     return [[self sectionRecordAtIndex:indexPath.section] cellRecordAtIndex:[self rowOrItemIndexForIndexPath:indexPath]];
 }
 
@@ -223,12 +225,12 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return nil;
 }
 
-- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])buffer count:(NSUInteger)len {
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id _Nonnull __unsafe_unretained [])buffer count:(NSUInteger)len {
     return [_sectionRecords countByEnumeratingWithState:state objects:buffer count:len];
 }
 
 
-- (CGSize)maxSizeForRecord:(FSQCellRecord *)record atIndexPath:(NSIndexPath *)indexPath defaultWidth:(CGFloat)defaultWidth defaultHeight:(CGFloat)defaultHeight {
+- (CGSize)maxSizeForRecord:(FSQCellRecord *)record atIndexPath:(nullable NSIndexPath *)indexPath defaultWidth:(CGFloat)defaultWidth defaultHeight:(CGFloat)defaultHeight {
     if (indexPath // nil means its a header or footer
         && [self.delegate respondsToSelector:@selector(maximumSizeForCellAtIndexPath:withManifest:record:)]) {
         return [self.delegate maximumSizeForCellAtIndexPath:indexPath withManifest:self record:record];
@@ -249,9 +251,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 // Subclasses should override public methods, then call through to these with managedViewUpdates set to
 // do any additional work they need to support their use case (ie table or collection updating)
 
-- (void)replaceSectionRecords:(NSArray *)sectionRecords 
-            selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy 
-           managedViewUpdates:(void(^)(NSArray *originalRecords))managedViewUpdates {
+- (void)replaceSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords
+            selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy
+           managedViewUpdates:(nullable void(^)(NSArray<FSQSectionRecord *> *originalRecords))managedViewUpdates {
     
     NSArray *originalRecords = _sectionRecords;
     
@@ -285,17 +287,17 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)setSectionRecords:(NSArray *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy { 
+- (void)setSectionRecords:(NSArray *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
     [self replaceSectionRecords:sectionRecords selectionStrategy:selectionStrategy managedViewUpdates:nil];
 }
 
-- (void)setSectionRecords:(NSArray *)sectionRecords { 
+- (void)setSectionRecords:(NSArray *)sectionRecords {
     [self setSectionRecords:sectionRecords selectionStrategy:FSQViewReloadCellSelectionStrategyDeselectAll];
 }
 
-- (NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert 
-                   atIndexPath:(NSIndexPath *)indexPath 
-            managedViewUpdates:(void(^)(NSArray *insertedIndexPaths))managedViewUpdates {
+- (nullable NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert
+                            atIndexPath:(NSIndexPath *)indexPath
+                     managedViewUpdates:(nullable void(^)(NSArray *insertedIndexPaths))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -352,14 +354,14 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     
 }
 
-- (NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert 
+- (NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert
                    atIndexPath:(NSIndexPath *)indexPath {
     return [self insertCellRecords:cellRecordsToInsert atIndexPath:indexPath managedViewUpdates:nil];
 }
 
-- (NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecordsToInsert 
-                             atIndex:(NSInteger)index 
-                  managedViewUpdates:(void(^)(NSIndexSet *insertedIndexes))managedViewUpdates {
+- (nullable NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecordsToInsert
+                                      atIndex:(NSInteger)index
+                           managedViewUpdates:(nullable void(^)(NSIndexSet *insertedIndexes))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -405,9 +407,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self insertSectionRecords:sectionRecordsToInsert atIndex:index managedViewUpdates:nil];
 }
 
-- (BOOL)moveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath 
-                      toIndexPath:(NSIndexPath *)targetIndexPath 
-               managedViewUpdates:(void(^)())managedViewUpdates {
+- (BOOL)moveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath
+                      toIndexPath:(NSIndexPath *)targetIndexPath
+               managedViewUpdates:(nullable void(^)())managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -432,7 +434,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         numberofTargetSectionRecordsAfterMove = [targetSectionRecord numberOfCellRecords] + 1;
     }
     
-    if (!(intitialCellIndex < [initialSectionRecord numberOfCellRecords]) 
+    if (!(intitialCellIndex < [initialSectionRecord numberOfCellRecords])
         || targetCellIndex > numberofTargetSectionRecordsAfterMove) {
         return NO;
     }
@@ -490,9 +492,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self moveCellRecordAtIndexPath:initialIndexPath toIndexPath:targetIndexPath managedViewUpdates:nil];
 }
 
-- (BOOL)moveSectionRecordAtIndex:(NSInteger)initialIndex 
-                         toIndex:(NSInteger)targetIndex 
-              managedViewUpdates:(void(^)())managedViewUpdates {
+- (BOOL)moveSectionRecordAtIndex:(NSInteger)initialIndex
+                         toIndex:(NSInteger)targetIndex
+              managedViewUpdates:(nullable void(^)())managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -540,9 +542,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self moveSectionRecordAtIndex:initialIndex toIndex:targetIndex managedViewUpdates:nil];
 }
 
-- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths 
-                       removeEmptySections:(BOOL)shouldRemoveEmptySections 
-                        managedViewUpdates:(void(^)(NSArray *removedIndexPaths, NSIndexSet *removedSectionIndexes))managedViewUpdates {
+- (nullable NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths
+                                removeEmptySections:(BOOL)shouldRemoveEmptySections
+                                 managedViewUpdates:(nullable void(^)(NSArray *removedIndexPaths, NSIndexSet *removedSectionIndexes))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -617,10 +619,12 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     NSIndexSet *sectionIndexesToRemove = [sectionIndexesToRemoveMutable copy];
     NSArray *removedCellIndexPaths = [removedCellIndexPathsMutable copy];
     
-    [self removeSectionRecordsAtIndexes:sectionIndexesToRemove shouldInformDelegates:NO managedViewUpdates:nil];
-    
-    if (managedViewUpdates && _automaticallyUpdateManagedView) {
-        managedViewUpdates(removedCellIndexPaths, sectionIndexesToRemove);
+    if (sectionIndexesToRemove) {
+        [self removeSectionRecordsAtIndexes:sectionIndexesToRemove shouldInformDelegates:NO managedViewUpdates:nil];
+        
+        if (managedViewUpdates && _automaticallyUpdateManagedView) {
+            managedViewUpdates(removedCellIndexPaths, sectionIndexesToRemove);
+        }
     }
     
     /**  Inform delegates  **/
@@ -634,27 +638,27 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [removedCellIndexPaths copy];
 }
 
-- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths 
+- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths
                        removeEmptySections:(BOOL)shouldRemoveEmptySections {
     return [self removeCellRecordsAtIndexPaths:indexPaths removeEmptySections:shouldRemoveEmptySections managedViewUpdates:nil];
     
 }
 
-- (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes 
-                   managedViewUpdates:(void(^)())managedViewUpdates {
+- (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes
+                   managedViewUpdates:(nullable void(^)())managedViewUpdates {
     return [self removeSectionRecordsAtIndexes:indexes shouldInformDelegates:YES managedViewUpdates:managedViewUpdates];
 }
 
-- (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes 
+- (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes
                 shouldInformDelegates:(BOOL)shouldInformDelegates
-                   managedViewUpdates:(void(^)())managedViewUpdates {
+                   managedViewUpdates:(nullable void(^)())managedViewUpdates {
     
     /**  Check parameters  **/
     
     NSInteger numberOfSections = [self numberOfSectionRecords];
     
-    if (numberOfSections <= 0 
-        || [indexes count] <= 0 
+    if (numberOfSections <= 0
+        || [indexes count] <= 0
         || [indexes lastIndex] >= numberOfSections) {
         return NO;
     }
@@ -694,16 +698,16 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self removeSectionRecordsAtIndexes:indexes managedViewUpdates:nil];
 }
 
-- (NSArray *)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths 
-                            withCellRecords:(NSArray *)newCellRecords 
-                         managedViewUpdates:(void(^)(NSArray *replacedIndexPaths))managedViewUpdates {
+- (void)replaceCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
+                       withCellRecords:(NSArray<FSQCellRecord *> *)newCellRecords
+                    managedViewUpdates:(nullable void(^)(NSArray<NSIndexPath *> *replacedIndexPaths))managedViewUpdates {
     /**  Check parameters  **/
     
     if (!indexPaths
         || !newCellRecords
         || [indexPaths count] == 0
         || [indexPaths count] != [newCellRecords count]) {
-        return nil;
+        return;
     }
     
     /**  Inform delegates  **/
@@ -716,11 +720,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     
     /**  Do work  **/
     
-    NSMutableArray *replacedIndexPathsMutable = [NSMutableArray new];
-    NSMutableArray *replacedCellRecordsMutable = [NSMutableArray new];
-    NSMutableArray *insertedCellRecordsMutable = [NSMutableArray new];
+    NSMutableArray<NSIndexPath *> *replacedIndexPathsMutable = [NSMutableArray new];
+    NSMutableArray<FSQCellRecord *> *replacedCellRecordsMutable = [NSMutableArray new];
+    NSMutableArray<FSQCellRecord *> *insertedCellRecordsMutable = [NSMutableArray new];
     
-    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath *indexPath, NSUInteger parameterIndex, BOOL *stop) {        
+    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath *indexPath, NSUInteger parameterIndex, BOOL *stop) {
         NSInteger sectionIndex = indexPath.section;
         
         if (sectionIndex >= [self numberOfSectionRecords]
@@ -734,9 +738,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         if (cellIndex >= [sectionRecord numberOfCellRecords]
             || cellIndex < 0) {
             return;
-        } 
+        }
         
-        NSMutableArray *cellRecords = [sectionRecord.cellRecords mutableCopy];
+        NSMutableArray<FSQCellRecord *> *cellRecords = [sectionRecord.cellRecords mutableCopy];
         
         [replacedIndexPathsMutable addObject:indexPath];
         [replacedCellRecordsMutable addObject:cellRecords[cellIndex]];
@@ -747,9 +751,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         [sectionRecord setCellRecords:cellRecords];
     }];
     
-    NSArray *replacedIndexPaths = [replacedIndexPathsMutable copy];
-    NSArray *replacedCellRecords = [replacedCellRecordsMutable copy];
-    NSArray *insertedCellRecords = [insertedCellRecordsMutable copy];
+    NSArray<NSIndexPath *> *replacedIndexPaths = [replacedIndexPathsMutable copy];
+    NSArray<FSQCellRecord *> *replacedCellRecords = [replacedCellRecordsMutable copy];
+    NSArray<FSQCellRecord *> *insertedCellRecords = [insertedCellRecordsMutable copy];
     
     if (managedViewUpdates && _automaticallyUpdateManagedView) {
         managedViewUpdates(replacedIndexPaths);
@@ -762,17 +766,15 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             [delegate manifest:self didReplaceCellRecordsAtIndexPaths:replacedIndexPaths withRecords:insertedCellRecords replacedRecords:replacedCellRecords];
         }
     }];
-    
-    return nil;
 }
 
-- (NSArray *)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withCellRecords:(NSArray *)newCellRecords {
-    return [self replaceCellRecordsAtIndexPaths:indexPaths withCellRecords:newCellRecords managedViewUpdates:nil];
+- (void)replaceCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withCellRecords:(NSArray<FSQCellRecord *> *)newCellRecords {
+    [self replaceCellRecordsAtIndexPaths:indexPaths withCellRecords:newCellRecords managedViewUpdates:nil];
 }
 
-- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes 
-                            withSectionRecords:(NSArray *)newSectionRecords 
-                            managedViewUpdates:(void(^)(NSIndexSet *replacedIndexes))managedViewUpdates {
+- (nullable NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray<NSNumber *> *)indexes
+                                     withSectionRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords
+                                     managedViewUpdates:(nullable void(^)(NSIndexSet *replacedIndexes))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -793,12 +795,12 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     
     /**  Do work  **/
     
-    NSMutableArray *replacedIndexesMutable = [NSMutableArray new];
+    NSMutableArray<NSNumber *> *replacedIndexesMutable = [NSMutableArray new];
     NSMutableIndexSet *replacedIndexSetMutable = [NSMutableIndexSet new];
-    NSMutableArray *replacedSectionRecordsMutable = [NSMutableArray new];
-    NSMutableArray *insertedSectionRecordsMutable = [NSMutableArray new];
+    NSMutableArray<FSQSectionRecord *> *replacedSectionRecordsMutable = [NSMutableArray new];
+    NSMutableArray<FSQSectionRecord *> *insertedSectionRecordsMutable = [NSMutableArray new];
     
-    NSMutableArray *sectionRecordsMutable = [_sectionRecords mutableCopy];
+    NSMutableArray<FSQSectionRecord *> *sectionRecordsMutable = [_sectionRecords mutableCopy];
     
     [indexes enumerateObjectsUsingBlock:^(NSNumber *sectionIndexNumber, NSUInteger parameterIndex, BOOL *stop) {
         NSInteger sectionIndex = [sectionIndexNumber integerValue];
@@ -818,10 +820,10 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     
     _sectionRecords = [sectionRecordsMutable copy];
     
-    NSArray *replacedIndexes = [replacedIndexesMutable copy];
+    NSArray<NSNumber *> *replacedIndexes = [replacedIndexesMutable copy];
     NSIndexSet *replacedIndexSet = [replacedIndexSetMutable copy];
-    NSArray *replacedSectionRecords = [replacedSectionRecordsMutable copy];
-    NSArray *insertedSectionRecords = [insertedSectionRecordsMutable copy];
+    NSArray<FSQSectionRecord *> *replacedSectionRecords = [replacedSectionRecordsMutable copy];
+    NSArray<FSQSectionRecord *> *insertedSectionRecords = [insertedSectionRecordsMutable copy];
     
     if (managedViewUpdates && _automaticallyUpdateManagedView) {
         managedViewUpdates(replacedIndexSet);
@@ -838,11 +840,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return replacedIndexSet;
 }
 
-- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes withSectionRecords:(NSArray *)newSectionRecords {
+- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray<NSNumber *> *)indexes withSectionRecords:(NSArray *)newSectionRecords {
     return [self replaceSectionRecordsAtIndexes:indexes withSectionRecords:newSectionRecords managedViewUpdates:nil];
 }
 
-- (void)reloadManagedViewWithUpdates:(void(^)())managedViewUpdates {
+- (void)reloadManagedViewWithUpdates:(nullable void(^)())managedViewUpdates {
     
     /**  Inform delegates  **/
     
@@ -871,7 +873,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     [self reloadManagedViewWithUpdates:nil];
 }
 
-- (void)reloadSectionsAtIndexes:(NSIndexSet *)indexes managedViewUpdates:(void(^)(NSIndexSet *indexes))managedViewUpdates {
+- (void)reloadSectionsAtIndexes:(NSIndexSet *)indexes managedViewUpdates:(nullable void(^)(NSIndexSet *indexes))managedViewUpdates {
     
     /**  Inform delegates  **/
     
@@ -900,7 +902,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     [self reloadSectionsAtIndexes:indexes managedViewUpdates:nil];
 }
 
-- (void)reloadCellsAtIndexPaths:(NSArray *)indexPaths managedViewUpdates:(void(^)(NSArray *indexPaths))managedViewUpdates {
+- (void)reloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths managedViewUpdates:(nullable void(^)(NSArray *indexPaths))managedViewUpdates {
     
     /**  Inform delegates  **/
     
@@ -998,7 +1000,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 - (FSQIdentifierRegistrationResult)registerIdentifier:(NSString *)identifier forCellClass:(Class)cellClass recordType:(FSQCellRecordType)recordType {
     
     if (recordType == FSQCellRecordTypeBody) {
-        return [self registerIdentifier:identifier forCellClass:cellClass map:_identifierCellClassMap];        
+        return [self registerIdentifier:identifier forCellClass:cellClass map:_identifierCellClassMap];
     }
     else {
         @throw ([NSException exceptionWithName:NSInvalidArgumentException reason:@"Unrecognized recordType in registerIdentifier:forCellClass:recordType:" userInfo:nil]);
@@ -1023,8 +1025,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 
-- (NSSet *)matchingIndexPathsForCurrentlySelectedIndexPaths:(NSArray *)currentlySelectedIndexPaths
-                                          newSectionRecords:(NSArray *)newSectionRecords {
+- (NSSet *)matchingIndexPathsForCurrentlySelectedIndexPaths:(NSArray<NSIndexPath *> *)currentlySelectedIndexPaths
+                                          newSectionRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords {
     
     NSMutableSet *currentlySelectedRecords = [NSMutableSet new];
     
@@ -1087,20 +1089,20 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     FSQCellManifestMessageForwarderEnumerator *_tableViewDatasourceForwarderEnumerator;
 }
 
-- (void)setTableView:(UITableView *)tableView {
+- (void)setTableView:(nullable UITableView *)tableView {
     self.tableView.dataSource = nil;
     
     [self setManagedView:tableView];
     tableView.dataSource = _tableViewDatasourceForwarderEnumerator.messageForwarder;
 }
 
-- (UITableView *)tableView {
+- (nullable UITableView *)tableView {
     return (UITableView *)self.managedView;
 }
 
 
 - (NSArray *)messageForwarderEnumerators NS_REQUIRES_SUPER {
-    return  [[super messageForwarderEnumerators] arrayByAddingObjectsFromArray:@[_tableViewDatasourceForwarderEnumerator]];
+    return [[super messageForwarderEnumerators] arrayByAddingObjectsFromArray:@[_tableViewDatasourceForwarderEnumerator]];
 }
 
 - (void)createForwarders NS_REQUIRES_SUPER {
@@ -1110,8 +1112,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     _tableViewDatasourceForwarderEnumerator.manifest = self;
 }
 
-- (instancetype)initWithDelegate:(id)delegate 
-                         plugins:(NSArray *)plugins
+- (instancetype)initWithDelegate:(nullable id)delegate
+                         plugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)plugins
                        tableView:(UITableView *)tableView {
     if ((self = [self initWithDelegate:delegate plugins:plugins])) {
         [self setTableView:tableView];
@@ -1133,7 +1135,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [NSIndexPath indexPathForRow:rowOrItem inSection:section];
 }
 
-- (void)performBatchRecordModificationUpdates:(void (^)(void))updates {
+- (void)performBatchRecordModificationUpdates:(nullable void (^)(void))updates {
     
     if (updates) {
         [self.tableView beginUpdates];
@@ -1142,7 +1144,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-#pragma mark - Insertion and Removal - 
+#pragma mark - Insertion and Removal -
 
 - (void)reloadManagedView {
     [super reloadManagedViewWithUpdates:^{
@@ -1160,22 +1162,22 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)reloadCellsAtIndexPaths:(NSArray *)indexPaths {
+- (void)reloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
     [self reloadCellsAtIndexPaths:indexPaths withAnimation:UITableViewRowAnimationNone];
 }
 
-- (void)reloadCellsAtIndexPaths:(NSArray *)indexPaths withAnimation:(UITableViewRowAnimation)animation {
-    [super reloadCellsAtIndexPaths:indexPaths managedViewUpdates:^(NSArray *indexPaths) {
+- (void)reloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withAnimation:(UITableViewRowAnimation)animation {
+    [super reloadCellsAtIndexPaths:indexPaths managedViewUpdates:^(NSArray<NSIndexPath *> *indexPaths) {
         [self.tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:animation];
     }];
 }
 
-- (void)setSectionRecords:(NSArray *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
+- (void)setSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
     
     switch (selectionStrategy) {
         case FSQViewReloadCellSelectionStrategyDeselectAll: {
-            [super replaceSectionRecords:sectionRecords 
-                       selectionStrategy:selectionStrategy 
+            [super replaceSectionRecords:sectionRecords
+                       selectionStrategy:selectionStrategy
                       managedViewUpdates:^(NSArray *originalRecorcds) {
                           [self.tableView reloadData];
                           
@@ -1187,34 +1189,34 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         }
             break;
         case FSQViewReloadCellSelectionStrategyMaintainSelectedIndexPaths: {
-            [super replaceSectionRecords:sectionRecords 
-                       selectionStrategy:selectionStrategy 
+            [super replaceSectionRecords:sectionRecords
+                       selectionStrategy:selectionStrategy
                       managedViewUpdates:^(NSArray *originalRecorcds) {
                           NSArray *indexPaths = [self.tableView indexPathsForSelectedRows];
                           
                           [self.tableView reloadData];
                           
                           for (NSIndexPath *indexPath in indexPaths) {
-                              [self.tableView selectRowAtIndexPath:indexPath 
-                                                          animated:NO 
+                              [self.tableView selectRowAtIndexPath:indexPath
+                                                          animated:NO
                                                     scrollPosition:UITableViewScrollPositionNone];
                           }
                       }];
         }
             break;
         case FSQViewReloadCellSelectionStrategyMaintainSelectedRecords: {
-            NSSet *newIndexPathsToSelect = [self matchingIndexPathsForCurrentlySelectedIndexPaths:[self.tableView indexPathsForSelectedRows] 
+            NSSet *newIndexPathsToSelect = [self matchingIndexPathsForCurrentlySelectedIndexPaths:[self.tableView indexPathsForSelectedRows]
                                                                                 newSectionRecords:sectionRecords];
             
             // Above must be done before super call so "currently" selected paths line up
-            [super replaceSectionRecords:sectionRecords 
-                       selectionStrategy:selectionStrategy 
+            [super replaceSectionRecords:sectionRecords
+                       selectionStrategy:selectionStrategy
                       managedViewUpdates:^(NSArray *originalRecorcds) {
                           [self.tableView reloadData];
                           
                           for (NSIndexPath *indexPath in newIndexPathsToSelect) {
-                              [self.tableView selectRowAtIndexPath:indexPath 
-                                                          animated:NO 
+                              [self.tableView selectRowAtIndexPath:indexPath
+                                                          animated:NO
                                                     scrollPosition:UITableViewScrollPositionNone];
                           }
                       }];
@@ -1228,8 +1230,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert atIndexPath:(NSIndexPath *)indexPath withAnimation:(UITableViewRowAnimation)animation {
-    return [super insertCellRecords:cellRecordsToInsert 
-                        atIndexPath:indexPath 
+    return [super insertCellRecords:cellRecordsToInsert
+                        atIndexPath:indexPath
                  managedViewUpdates:^(NSArray *insertedIndexPaths) {
                      if ([insertedIndexPaths count] > 0) {
                          [self.tableView insertRowsAtIndexPaths:insertedIndexPaths withRowAnimation:animation];
@@ -1242,8 +1244,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecords atIndex:(NSInteger)index withAnimation:(UITableViewRowAnimation)animation {
-    return [super insertSectionRecords:sectionRecords 
-                               atIndex:index 
+    return [super insertSectionRecords:sectionRecords
+                               atIndex:index
                     managedViewUpdates:^(NSIndexSet *insertedIndexes) {
                         if ([insertedIndexes count] > 0) {
                             [self.tableView insertSections:insertedIndexes withRowAnimation:animation];
@@ -1252,34 +1254,34 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (BOOL)moveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath toIndexPath:(NSIndexPath *)targetIndexPath {
-    return [super moveCellRecordAtIndexPath:initialIndexPath 
-                                toIndexPath:targetIndexPath 
+    return [super moveCellRecordAtIndexPath:initialIndexPath
+                                toIndexPath:targetIndexPath
                          managedViewUpdates:^{
                              [self.tableView moveRowAtIndexPath:initialIndexPath toIndexPath:targetIndexPath];
                          }];
 }
 
 - (BOOL)moveSectionRecordAtIndex:(NSInteger)initialIndex toIndex:(NSInteger)targetIndex {
-    return [super moveSectionRecordAtIndex:initialIndex 
-                                   toIndex:targetIndex 
+    return [super moveSectionRecordAtIndex:initialIndex
+                                   toIndex:targetIndex
                         managedViewUpdates:^{
                             [self.tableView moveSection:initialIndex toSection:targetIndex];
                         }];
 }
 
 
-- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths 
+- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths
                        removeEmptySections:(BOOL)shouldRemoveEmptySections {
-    return [self removeCellRecordsAtIndexPaths:indexPaths 
-                                 withAnimation:UITableViewRowAnimationNone 
+    return [self removeCellRecordsAtIndexPaths:indexPaths
+                                 withAnimation:UITableViewRowAnimationNone
                            removeEmptySections:shouldRemoveEmptySections];
 }
 
-- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths 
-                             withAnimation:(UITableViewRowAnimation)animation 
+- (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths
+                             withAnimation:(UITableViewRowAnimation)animation
                        removeEmptySections:(BOOL)shouldRemoveEmptySections {
-    return [super removeCellRecordsAtIndexPaths:indexPaths 
-                            removeEmptySections:shouldRemoveEmptySections 
+    return [super removeCellRecordsAtIndexPaths:indexPaths
+                            removeEmptySections:shouldRemoveEmptySections
                              managedViewUpdates:^(NSArray *removedIndexPaths, NSIndexSet *removedSectionIndexes) {
                                  if ([removedSectionIndexes count] > 0) {
                                      [self.tableView beginUpdates];
@@ -1298,26 +1300,26 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes withAnimation:(UITableViewRowAnimation)animation {
-    return [super removeSectionRecordsAtIndexes:indexes 
+    return [super removeSectionRecordsAtIndexes:indexes
                              managedViewUpdates:^{
                                  [self.tableView deleteSections:indexes withRowAnimation:animation];
                              }];
 }
 
-- (NSArray *)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withCellRecords:(NSArray *)newCellRecords {
-    return [self replaceCellRecordsAtIndexPaths:indexPaths withCellRecords:newCellRecords withAnimation:UITableViewRowAnimationNone];
+- (void)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withCellRecords:(NSArray *)newCellRecords {
+    [self replaceCellRecordsAtIndexPaths:indexPaths withCellRecords:newCellRecords withAnimation:UITableViewRowAnimationNone];
 }
 
-- (NSArray *)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths 
-                            withCellRecords:(NSArray *)newCellRecords 
-                              withAnimation:(UITableViewRowAnimation)animation {
-    return [super replaceCellRecordsAtIndexPaths:indexPaths 
-                                 withCellRecords:newCellRecords 
-                              managedViewUpdates:^(NSArray *replacedIndexPaths) {
-                                  if ([replacedIndexPaths count] > 0) {
-                                      [self.tableView reloadRowsAtIndexPaths:replacedIndexPaths withRowAnimation:animation];
-                                  }
-                              }];
+- (void)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths
+                       withCellRecords:(NSArray *)newCellRecords
+                         withAnimation:(UITableViewRowAnimation)animation {
+    [super replaceCellRecordsAtIndexPaths:indexPaths
+                          withCellRecords:newCellRecords
+                       managedViewUpdates:^(NSArray *replacedIndexPaths) {
+                           if ([replacedIndexPaths count] > 0) {
+                               [self.tableView reloadRowsAtIndexPaths:replacedIndexPaths withRowAnimation:animation];
+                           }
+                       }];
     
 }
 
@@ -1325,11 +1327,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self replaceSectionRecordsAtIndexes:indexes withSectionRecords:newSectionRecords withAnimation:UITableViewRowAnimationNone];
 }
 
-- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes 
-                            withSectionRecords:(NSArray *)newSectionRecords 
+- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray<NSNumber *> *)indexes
+                            withSectionRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords
                                  withAnimation:(UITableViewRowAnimation)animation {
-    return [super replaceSectionRecordsAtIndexes:indexes 
-                              withSectionRecords:newSectionRecords 
+    return [super replaceSectionRecordsAtIndexes:indexes
+                              withSectionRecords:newSectionRecords
                               managedViewUpdates:^(NSIndexSet *replacedIndexes) {
                                   if ([replacedIndexes count] > 0) {
                                       [self.tableView reloadSections:replacedIndexes withRowAnimation:animation];
@@ -1388,9 +1390,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (UITableViewHeaderFooterView *)viewForHeaderOrFooter:(FSQCellRecordType)recordType 
-                                                record:(FSQCellRecord *)record 
-                                             tableView:(UITableView *)tableView 
+- (UITableViewHeaderFooterView *)viewForHeaderOrFooter:(FSQCellRecordType)recordType
+                                                record:(FSQCellRecord *)record
+                                             tableView:(UITableView *)tableView
                                              indexPath:(NSIndexPath *)indexPath {
     if (!record) {
         return nil;
@@ -1412,11 +1414,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if (tableView == self.tableView) {
         return [self viewForHeaderOrFooter:FSQCellRecordTypeHeader
-                                    record:[self sectionRecordAtIndex:section].header 
-                                 tableView:tableView 
+                                    record:[self sectionRecordAtIndex:section].header
+                                 tableView:tableView
                                  indexPath:[NSIndexPath indexPathForRow:kRowIndexForHeaderIndexPaths inSection:section]];
     }
     else {
@@ -1424,11 +1426,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     if (tableView == self.tableView) {
         return [self viewForHeaderOrFooter:FSQCellRecordTypeFooter
-                                    record:[self sectionRecordAtIndex:section].footer 
-                                 tableView:tableView 
+                                    record:[self sectionRecordAtIndex:section].footer
+                                 tableView:tableView
                                  indexPath:[NSIndexPath indexPathForRow:kRowIndexForFooterIndexPaths inSection:section]];
     }
     else {
@@ -1445,7 +1447,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
 }
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.tableView) {
         if ([self recordShouldSelectAtIndexPath:indexPath]) {
             return indexPath;
@@ -1523,13 +1525,13 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
                 [self.tableView registerClass:cellClass forHeaderFooterViewReuseIdentifier:identifier];
             }
             else {
-                [self.tableView registerClass:cellClass forCellReuseIdentifier:identifier];   
+                [self.tableView registerClass:cellClass forCellReuseIdentifier:identifier];
             }
             break;
         }
         case FSQIdentifierRegistrationResultConflictingExistingType:
         {
-            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException 
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
                                             reason:[NSString stringWithFormat:@"Tried to register class %@ for identifier %@, but a different class was already registered. Delegate: %@", cellClass, identifier, self.delegate]
                                           userInfo:nil]);
         }
@@ -1543,6 +1545,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         NSString *identifier = record.reuseIdentifier ?: NSStringFromClass(record.cellClass);
         
         if (!record || !identifier || !record.cellClass) {
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord"
+                                          userInfo:nil]);
             return nil;
         }
         
@@ -1581,18 +1586,18 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 
-- (void)setCollectionView:(UICollectionView *)collectionView {
+- (void)setCollectionView:(nullable UICollectionView *)collectionView {
     self.collectionView.dataSource = nil;
     
     [self setManagedView:collectionView];
     collectionView.dataSource = _collectionViewDatasourceForwarderEnumerator.messageForwarder;
 }
 
-- (UICollectionView *)collectionView {
+- (nullable UICollectionView *)collectionView {
     return (UICollectionView *)self.managedView;
 }
 
-- (instancetype)initWithDelegate:(id)delegate 
+- (instancetype)initWithDelegate:(id)delegate
                          plugins:(NSArray *)plugins
                   collectionView:(UICollectionView *)collectionView {
     
@@ -1615,13 +1620,13 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [NSIndexPath indexPathForItem:rowOrItem inSection:section];
 }
 
-- (void)performBatchRecordModificationUpdates:(void (^)(void))updates {
+- (void)performBatchRecordModificationUpdates:(nullable void (^)(void))updates {
     if (updates) {
         [self.collectionView performBatchUpdates:updates completion:nil];
     }
 }
 
-#pragma mark - Insertion and Removal - 
+#pragma mark - Insertion and Removal -
 
 - (void)reloadManagedView {
     [super reloadManagedViewWithUpdates:^{
@@ -1635,18 +1640,18 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)reloadCellsAtIndexPaths:(NSArray *)indexPaths {
-    [super reloadCellsAtIndexPaths:indexPaths managedViewUpdates:^(NSArray *indexPaths) {
+- (void)reloadCellsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+    [super reloadCellsAtIndexPaths:indexPaths managedViewUpdates:^(NSArray<NSIndexPath *> *indexPaths) {
         [self.collectionView reloadItemsAtIndexPaths:indexPaths];
     }];
 }
 
-- (void)setSectionRecords:(NSArray *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
+- (void)setSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
     
     switch (selectionStrategy) {
         case FSQViewReloadCellSelectionStrategyDeselectAll: {
-            [super replaceSectionRecords:sectionRecords 
-                       selectionStrategy:selectionStrategy 
+            [super replaceSectionRecords:sectionRecords
+                       selectionStrategy:selectionStrategy
                       managedViewUpdates:^(NSArray *originalRecorcds) {
                           [self.collectionView reloadData];
                           
@@ -1658,34 +1663,34 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         }
             break;
         case FSQViewReloadCellSelectionStrategyMaintainSelectedIndexPaths: {
-            [super replaceSectionRecords:sectionRecords 
-                       selectionStrategy:selectionStrategy 
+            [super replaceSectionRecords:sectionRecords
+                       selectionStrategy:selectionStrategy
                       managedViewUpdates:^(NSArray *originalRecorcds) {
                           NSArray *indexPaths = [self.collectionView indexPathsForSelectedItems];
                           
                           [self.collectionView reloadData];
                           
                           for (NSIndexPath *indexPath in indexPaths) {
-                              [self.collectionView selectItemAtIndexPath:indexPath 
-                                                                animated:NO 
+                              [self.collectionView selectItemAtIndexPath:indexPath
+                                                                animated:NO
                                                           scrollPosition:UICollectionViewScrollPositionNone];
                           }
                       }];
         }
             break;
         case FSQViewReloadCellSelectionStrategyMaintainSelectedRecords: {
-            NSSet *newIndexPathsToSelect = [self matchingIndexPathsForCurrentlySelectedIndexPaths:[self.collectionView indexPathsForSelectedItems] 
+            NSSet *newIndexPathsToSelect = [self matchingIndexPathsForCurrentlySelectedIndexPaths:[self.collectionView indexPathsForSelectedItems]
                                                                                 newSectionRecords:sectionRecords];
             
             // Above must be done before super call so "currently" selected paths line up
-            [super replaceSectionRecords:sectionRecords 
-                       selectionStrategy:selectionStrategy 
+            [super replaceSectionRecords:sectionRecords
+                       selectionStrategy:selectionStrategy
                       managedViewUpdates:^(NSArray *originalRecorcds) {
                           [self.collectionView reloadData];
                           
                           for (NSIndexPath *indexPath in newIndexPathsToSelect) {
-                              [self.collectionView selectItemAtIndexPath:indexPath 
-                                                                animated:NO 
+                              [self.collectionView selectItemAtIndexPath:indexPath
+                                                                animated:NO
                                                           scrollPosition:UICollectionViewScrollPositionNone];
                           }
                       }];
@@ -1695,8 +1700,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (NSArray *)insertCellRecords:(NSArray *)cellRecordsToInsert atIndexPath:(NSIndexPath *)indexPath {
-    return [super insertCellRecords:cellRecordsToInsert 
-                        atIndexPath:indexPath 
+    return [super insertCellRecords:cellRecordsToInsert
+                        atIndexPath:indexPath
                  managedViewUpdates:^(NSArray *insertedIndexPaths) {
                      if ([insertedIndexPaths count] > 0) {
                          [self.collectionView insertItemsAtIndexPaths:insertedIndexPaths];
@@ -1705,8 +1710,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (NSIndexSet *)insertSectionRecords:(NSArray *)sectionRecords atIndex:(NSInteger)index {
-    return [self insertSectionRecords:sectionRecords 
-                              atIndex:index 
+    return [self insertSectionRecords:sectionRecords
+                              atIndex:index
                    managedViewUpdates:^(NSIndexSet *insertedIndexes) {
                        if ([insertedIndexes count] > 0) {
                            [self.collectionView insertSections:insertedIndexes];
@@ -1715,16 +1720,16 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (BOOL)moveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath toIndexPath:(NSIndexPath *)targetIndexPath {
-    return [super moveCellRecordAtIndexPath:initialIndexPath 
-                                toIndexPath:targetIndexPath 
+    return [super moveCellRecordAtIndexPath:initialIndexPath
+                                toIndexPath:targetIndexPath
                          managedViewUpdates:^{
                              [self.collectionView moveItemAtIndexPath:initialIndexPath toIndexPath:targetIndexPath];
                          }];
 }
 
 - (BOOL)moveSectionRecordAtIndex:(NSInteger)initialIndex toIndex:(NSInteger)targetIndex {
-    return [super moveSectionRecordAtIndex:initialIndex 
-                                   toIndex:targetIndex 
+    return [super moveSectionRecordAtIndex:initialIndex
+                                   toIndex:targetIndex
                         managedViewUpdates:^{
                             [self.collectionView moveSection:initialIndex toSection:targetIndex];
                         }];
@@ -1732,8 +1737,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (NSArray *)removeCellRecordsAtIndexPaths:(NSArray *)indexPaths removeEmptySections:(BOOL)shouldRemoveEmptySections {
     
-    return [super removeCellRecordsAtIndexPaths:indexPaths 
-                            removeEmptySections:shouldRemoveEmptySections 
+    return [super removeCellRecordsAtIndexPaths:indexPaths
+                            removeEmptySections:shouldRemoveEmptySections
                              managedViewUpdates:^(NSArray *removedIndexPaths, NSIndexSet *removedSectionIndexes) {
                                  if ([removedSectionIndexes count] > 0) {
                                      [self.collectionView performBatchUpdates:^{
@@ -1748,26 +1753,26 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes {
-    return [super removeSectionRecordsAtIndexes:indexes 
+    return [super removeSectionRecordsAtIndexes:indexes
                              managedViewUpdates:^{
                                  [self.collectionView deleteSections:indexes];
                              }];
 }
 
-- (NSArray *)replaceCellRecordsAtIndexPaths:(NSArray *)indexPaths withCellRecords:(NSArray *)newCellRecords {
-    return [super replaceCellRecordsAtIndexPaths:indexPaths 
-                                 withCellRecords:newCellRecords 
-                              managedViewUpdates:^(NSArray *replacedIndexPaths) {
-                                  if ([replacedIndexPaths count] > 0) {
-                                      [self.collectionView reloadItemsAtIndexPaths:replacedIndexPaths];
-                                  }
-                              }];
+- (void)replaceCellRecordsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withCellRecords:(NSArray *)newCellRecords {
+    [super replaceCellRecordsAtIndexPaths:indexPaths
+                          withCellRecords:newCellRecords
+                       managedViewUpdates:^(NSArray *replacedIndexPaths) {
+                           if ([replacedIndexPaths count] > 0) {
+                               [self.collectionView reloadItemsAtIndexPaths:replacedIndexPaths];
+                           }
+                       }];
     
 }
 
-- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray *)indexes withSectionRecords:(NSArray *)newSectionRecords {
-    return [super replaceSectionRecordsAtIndexes:indexes 
-                              withSectionRecords:newSectionRecords 
+- (NSIndexSet *)replaceSectionRecordsAtIndexes:(NSArray<NSNumber *> *)indexes withSectionRecords:(NSArray<FSQSectionRecord *> *)newSectionRecords {
+    return [super replaceSectionRecordsAtIndexes:indexes
+                              withSectionRecords:newSectionRecords
                               managedViewUpdates:^(NSIndexSet *replacedIndexes) {
                                   if ([replacedIndexes count] > 0) {
                                       [self.collectionView reloadSections:replacedIndexes];
@@ -1779,7 +1784,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     if (self.collectionView == collectionView) {
-        return [self numberOfSectionRecords];        
+        return [self numberOfSectionRecords];
     }
     else {
         return 0;
@@ -1788,7 +1793,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if (self.collectionView == collectionView) {
-        return [self numberOfCellRecordsInSectionAtIndex:section];        
+        return [self numberOfCellRecordsInSectionAtIndex:section];
     }
     else {
         return 0;
@@ -1800,6 +1805,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
         
         if (!record) {
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord"
+                                          userInfo:nil]);
             return nil;
         }
         
@@ -1815,7 +1823,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
         
         if (!cell) {
-            @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException 
+            @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException
                                             reason:[NSString stringWithFormat:@"Tried to dequeue cell of class %@ for identifier %@, but failed. Delegate: %@", record.cellClass, identifier, self.delegate]
                                           userInfo:nil]);
         }
@@ -1849,6 +1857,9 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             NSString *identifier = record.reuseIdentifier ?: NSStringFromClass(record.cellClass);
             
             if (!identifier || !record.cellClass) {
+                @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                                reason:@"Attempting to initialize call with a bad or nil FSQCellRecord identifier or class"
+                                              userInfo:nil]);
                 return nil;
             }
             
@@ -1857,7 +1868,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             UICollectionReusableView *view = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:identifier forIndexPath:indexPath];
             
             if (!view) {
-                @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException 
+                @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException
                                                 reason:[NSString stringWithFormat:@"Tried to dequeue supplementary view for kind %@ of class %@ for identifier %@, but failed. Delegate: %@", kind, record.cellClass, identifier, self.delegate]
                                               userInfo:nil]);
             }
@@ -1867,14 +1878,16 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             return view;
         }
         else {
-            @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException 
+            @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException
                                             reason:[NSString stringWithFormat:@"Missing record when trying to dequeue supplementary view for kind %@ at index path %@. Likely your delegate returned a non-zero size for an empty view. Delegate: %@", kind, indexPath, self.delegate]
                                           userInfo:nil]);
             return nil;
         }
     }
     else {
-        NSAssert(0, @"Unrecognized table view in FSQCellManifest viewForSupplementaryElementOfKind:atIndexPath:");
+        @throw ([NSException exceptionWithName:kFSQIdentifierCellDequeueException
+                                        reason:@"Unrecognized table view in FSQCellManifest viewForSupplementaryElementOfKind:atIndexPath:"
+                                      userInfo:nil]);
         return nil;
     }
 }
@@ -1900,7 +1913,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             // do nothing
             break;
         case FSQIdentifierRegistrationResultAdded:
-        {            
+        {
             switch (recordType) {
                 case FSQCellRecordTypeBody:
                     [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:identifier];
@@ -1916,7 +1929,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             break;
         case FSQIdentifierRegistrationResultConflictingExistingType:
         {
-            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException 
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
                                             reason:[NSString stringWithFormat:@"Tried to register class %@ for identifier %@, but a different class was already registered. Delegate: %@", cellClass, identifier, self.delegate]
                                           userInfo:nil]);
         }
@@ -1940,7 +1953,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         }
         else {
             return CGSizeZero;
-        }     
+        }
     }
     else {
         return CGSizeZero;
@@ -1949,7 +1962,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
     if (collectionView == self.collectionView) {
-        return [self recordShouldHighlightAtIndexPath:indexPath];        
+        return [self recordShouldHighlightAtIndexPath:indexPath];
     }
     else {
         return NO;
@@ -1958,7 +1971,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (collectionView == self.collectionView) {
-        return [self recordShouldSelectAtIndexPath:indexPath];    
+        return [self recordShouldSelectAtIndexPath:indexPath];
     }
     else {
         return NO;
@@ -1983,7 +1996,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             if ([delegate respondsToSelector:@selector(manifest:didSelectCellAtIndexPath:withRecord:)]) {
                 [delegate manifest:self didSelectCellAtIndexPath:indexPath withRecord:record];
             }
-        }]; 
+        }];
     }
 }
 
@@ -2010,7 +2023,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         }
     }
     
-    return collectionViewLayout.footerReferenceSize; 
+    return collectionViewLayout.footerReferenceSize;
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView
@@ -2029,7 +2042,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }
     else {
         return UIEdgeInsetsZero;
-    }   
+    }
 }
 
 
@@ -2072,7 +2085,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return self;
 }
 
-- (id)nextObject {
+- (nullable id)nextObject {
     NSInteger index = _currentIndex;
     
     if (_manifest) {
@@ -2118,10 +2131,12 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         return [allObjects copy];
     }
     else {
-        return nil;
+        return @[];
     }
 }
 
 @end
 
 #pragma mark End Message Forwarder Implementations -
+
+NS_ASSUME_NONNULL_END

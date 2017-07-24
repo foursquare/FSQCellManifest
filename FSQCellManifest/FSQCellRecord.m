@@ -6,18 +6,33 @@
 
 #import "FSQCellRecord.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+/**
+ This is an empty (placeholder) internal object to allow us to keep
+ model as a nullable but not have to make model inside of the cell 
+ record a nullable and add checks everywhere.
+ */
+@interface FSQNullCellModel : NSObject
+
+@end
+
+@implementation FSQNullCellModel
+
+@end
+
 @implementation FSQCellRecord {
-    NSNumber *_allowsHighlighting;
-    NSNumber *_allowsSelection;
-    NSMutableDictionary *_userInfo;
+    NSNumber *_Nullable _allowsHighlighting;
+    NSNumber *_Nullable _allowsSelection;
+    NSMutableDictionary<NSString *, id> *_Nullable _userInfo;
 }
 
-- (instancetype)initWithModel:(id)model 
+- (instancetype)initWithModel:(nullable id)model
                     cellClass:(Class)cellClass
-                  onConfigure:(FSQCellRecordConfigBlock)onConfigure 
-                  onSelection:(FSQCellRecordSelectBlock)onSelection {
+                  onConfigure:(nullable FSQCellRecordConfigBlock)onConfigure
+                  onSelection:(nullable FSQCellRecordSelectBlock)onSelection {
     if ((self = [super init])) {
-        self.model = model;
+        self.model = model ?: [[FSQNullCellModel alloc] init];
         self.cellClass = cellClass;
         self.onSelection = onSelection;
         self.onConfigure = onConfigure;
@@ -92,7 +107,7 @@
             );
 }
 
-- (NSMutableDictionary *)userInfo {
+- (NSMutableDictionary<NSString *, id> *)userInfo {
     if (!_userInfo) {
         _userInfo = [NSMutableDictionary new];
     }
@@ -101,3 +116,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
