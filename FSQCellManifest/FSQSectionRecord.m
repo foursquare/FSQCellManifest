@@ -89,12 +89,12 @@ NS_ASSUME_NONNULL_BEGIN
             );
 }
 
-- (nullable NSArray<FSQCellRecord *> *)cellRecords {
+- (NSArray<FSQCellRecord *> *)cellRecords {
     if (_cellRecords) {
         return _cellRecords;
     }
     else {
-        return nil;
+        return @[];
     }
 }
 

@@ -251,7 +251,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 // Subclasses should override public methods, then call through to these with managedViewUpdates set to
 // do any additional work they need to support their use case (ie table or collection updating)
 
-- (void)replaceSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords
+- (void)replaceSectionRecords:(nullable NSArray<FSQSectionRecord *> *)sectionRecords
             selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy
            managedViewUpdates:(nullable void(^)(NSArray<FSQSectionRecord *> *originalRecords))managedViewUpdates {
     
@@ -287,11 +287,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)setSectionRecords:(NSArray *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
+- (void)setSectionRecords:(nullable NSArray *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
     [self replaceSectionRecords:sectionRecords selectionStrategy:selectionStrategy managedViewUpdates:nil];
 }
 
-- (void)setSectionRecords:(NSArray *)sectionRecords {
+- (void)setSectionRecords:(nullable NSArray *)sectionRecords {
     [self setSectionRecords:sectionRecords selectionStrategy:FSQViewReloadCellSelectionStrategyDeselectAll];
 }
 

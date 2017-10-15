@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
  This contents of this dictionary are not used internally by the manifest classes.
  You can use it to attach arbitrary data to the cell record for your own later use.
  */
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, id> *userInfo;
+@property (nonatomic, readonly) NSMutableDictionary *userInfo;
 
 /**
  Convenience initializer with the most commonly set properties as method parameters
