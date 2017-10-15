@@ -1172,7 +1172,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)setSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
+- (void)setSectionRecords:(nullable NSArray<FSQSectionRecord *> *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
     
     switch (selectionStrategy) {
         case FSQViewReloadCellSelectionStrategyDeselectAll: {
@@ -1646,7 +1646,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)setSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
+- (void)setSectionRecords:(nullable NSArray<FSQSectionRecord *> *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
     
     switch (selectionStrategy) {
         case FSQViewReloadCellSelectionStrategyDeselectAll: {
