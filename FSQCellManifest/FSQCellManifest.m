@@ -409,7 +409,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (BOOL)moveCellRecordAtIndexPath:(NSIndexPath *)initialIndexPath
                       toIndexPath:(NSIndexPath *)targetIndexPath
-               managedViewUpdates:(nullable void(^)())managedViewUpdates {
+               managedViewUpdates:(nullable void(^)(void))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -494,7 +494,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 
 - (BOOL)moveSectionRecordAtIndex:(NSInteger)initialIndex
                          toIndex:(NSInteger)targetIndex
-              managedViewUpdates:(nullable void(^)())managedViewUpdates {
+              managedViewUpdates:(nullable void(^)(void))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -645,13 +645,13 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes
-                   managedViewUpdates:(nullable void(^)())managedViewUpdates {
+                   managedViewUpdates:(nullable void(^)(void))managedViewUpdates {
     return [self removeSectionRecordsAtIndexes:indexes shouldInformDelegates:YES managedViewUpdates:managedViewUpdates];
 }
 
 - (BOOL)removeSectionRecordsAtIndexes:(NSIndexSet *)indexes
                 shouldInformDelegates:(BOOL)shouldInformDelegates
-                   managedViewUpdates:(nullable void(^)())managedViewUpdates {
+                   managedViewUpdates:(nullable void(^)(void))managedViewUpdates {
     
     /**  Check parameters  **/
     
@@ -844,7 +844,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return [self replaceSectionRecordsAtIndexes:indexes withSectionRecords:newSectionRecords managedViewUpdates:nil];
 }
 
-- (void)reloadManagedViewWithUpdates:(nullable void(^)())managedViewUpdates {
+- (void)reloadManagedViewWithUpdates:(nullable void(^)(void))managedViewUpdates {
     
     /**  Inform delegates  **/
     
