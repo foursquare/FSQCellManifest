@@ -618,8 +618,8 @@ extern const NSInteger kRowIndexForFooterIndexPaths;
  
  @return A new collection view cell manifest.
  */
-- (instancetype)initWithDelegate:(id)delegate
-                         plugins:(NSArray<id<FSQCellManifestPlugin>> *)plugins
+- (instancetype)initWithDelegate:(nullable id)delegate
+                         plugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)plugins
                   collectionView:(UICollectionView *)collectionView;
 
 

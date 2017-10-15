@@ -1597,8 +1597,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     return (UICollectionView *)self.managedView;
 }
 
-- (instancetype)initWithDelegate:(id)delegate
-                         plugins:(NSArray *)plugins
+- (instancetype)initWithDelegate:(nullable id)delegate
+                         plugins:(nullable NSArray *)plugins
                   collectionView:(UICollectionView *)collectionView {
     
     if ((self = [self initWithDelegate:delegate plugins:plugins])) {
