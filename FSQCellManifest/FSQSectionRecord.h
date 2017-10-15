@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return A new FSQSectionRecord object with the given properties set.
  */
-- (instancetype)initWithCellRecords:(NSArray<FSQCellRecord *> *)cellRecords
+- (instancetype)initWithCellRecords:(nullable NSArray<FSQCellRecord *> *)cellRecords
                              header:(nullable FSQCellRecord *)header
                              footer:(nullable FSQCellRecord *)footer;
 

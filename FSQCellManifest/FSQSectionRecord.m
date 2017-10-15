@@ -16,11 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableDictionary<NSString *, id> *_Nullable _userInfo;
 }
 
-- (instancetype)initWithCellRecords:(NSArray<FSQCellRecord *> *)cellRecords
+- (instancetype)initWithCellRecords:(nullable NSArray<FSQCellRecord *> *)cellRecords
                              header:(nullable FSQCellRecord *)header
                              footer:(nullable FSQCellRecord *)footer {
     if ((self = [super init])) {
-        _cellRecords = [cellRecords copy];
+        _cellRecords = [cellRecords copy] ?: @[];
         self.header = header;
         self.footer = footer;
     }
