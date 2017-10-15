@@ -11,10 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation FSQSectionRecord {
-    NSArray<FSQCellRecord *> *_cellRecords;
     NSValue *_Nullable _collectionViewSectionInsetPrivate;
-    NSMutableDictionary<NSString *, id> *_Nullable _userInfo;
 }
+
+@synthesize cellRecords = _cellRecords, userInfo = _userInfo;
 
 - (instancetype)initWithCellRecords:(nullable NSArray<FSQCellRecord *> *)cellRecords
                              header:(nullable FSQCellRecord *)header
@@ -58,9 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSMutableDictionary<NSString *, id> *)userInfo {
+- (NSMutableDictionary *)userInfo {
     if (!_userInfo) {
-        _userInfo = [NSMutableDictionary new];
+        _userInfo = [[NSMutableDictionary alloc] init];
     }
     
     return _userInfo;
