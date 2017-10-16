@@ -34,24 +34,31 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 @end
 
 @interface FSQCellManifestMessageForwarderEnumerator : NSEnumerator <FSQMessageForwarderEnumeratorGenerator>
+
 @property (nonatomic, readonly) FSQMessageForwarderWithEnumerator *messageForwarder;
 @property (nonatomic, weak) FSQCellManifest *manifest;
 @property (nonatomic, weak) id manifestDelegate;
 @property (nonatomic, readonly) NSUInteger currentIndex;
-- (void)addPlugins:(NSArray *)newPlugins;
-- (void)removePlugins:(NSArray *)pluginsToRemove;
+
+- (void)addPlugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)newPlugins;
+- (void)removePlugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)pluginsToRemove;
+
 @end
 
 // These methods all already exist in FSQSectionRecord.m but are not exposed.
 // Define them here so that FSQCellManfiest can know about them.
 // They are for internal manifest use only and should not be used outside of the framework
 @interface FSQSectionRecord (FSQCellManifestPrivateMethods)
+
 - (NSValue *)collectionViewSectionInsetPrivate;
+
 @end
 
 @interface FSQCellRecord (FSQCellManifestPrivateMethods)
+
 - (BOOL)allowsHighlightingWasSet;
 - (BOOL)allowsSelectionWasSet;
+
 @end
 
 #pragma mark End Private Headers, Types, and Constants -
@@ -287,11 +294,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
     }];
 }
 
-- (void)setSectionRecords:(nullable NSArray *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
+- (void)setSectionRecords:(nullable NSArray<FSQSectionRecord *> *)sectionRecords selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy {
     [self replaceSectionRecords:sectionRecords selectionStrategy:selectionStrategy managedViewUpdates:nil];
 }
 
-- (void)setSectionRecords:(nullable NSArray *)sectionRecords {
+- (void)setSectionRecords:(nullable NSArray<FSQSectionRecord *> *)sectionRecords {
     [self setSectionRecords:sectionRecords selectionStrategy:FSQViewReloadCellSelectionStrategyDeselectAll];
 }
 
@@ -1598,7 +1605,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 - (instancetype)initWithDelegate:(nullable id)delegate
-                         plugins:(nullable NSArray *)plugins
+                         plugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)plugins
                   collectionView:(UICollectionView *)collectionView {
     
     if ((self = [self initWithDelegate:delegate plugins:plugins])) {
@@ -2059,7 +2066,7 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 #pragma clang diagnostic pop
 
 @implementation FSQCellManifestMessageForwarderEnumerator {
-    NSMutableArray *_manifestPlugins;
+    NSMutableArray<id<FSQCellManifestPlugin>> *_manifestPlugins;
 }
 
 - (instancetype)init {
@@ -2072,11 +2079,11 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
 }
 
 
-- (void)addPlugins:(NSArray *)newPlugins {
+- (void)addPlugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)newPlugins {
     [_manifestPlugins addObjectsFromArray:newPlugins];
 }
 
-- (void)removePlugins:(NSArray *)pluginsToRemove {
+- (void)removePlugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)pluginsToRemove {
     [_manifestPlugins removeObjectsInArray:pluginsToRemove];
 }
 
