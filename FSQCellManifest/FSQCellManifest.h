@@ -129,7 +129,7 @@ extern const NSInteger kRowIndexForFooterIndexPaths;
  Setting this property is equivalent to calling `setSectionRecords:selectionStrategy:`
  with a selection strategy of FSQViewReloadCellSelectionStrategyDeselectAll.
  */
-@property (nonatomic) NSArray<FSQSectionRecord *> *sectionRecords;
+@property (nonatomic, null_resettable) NSArray<FSQSectionRecord *> *sectionRecords;
 
 /**
  Controls whether the manifest methods that alter its records will automatically call through to the
@@ -203,7 +203,7 @@ extern const NSInteger kRowIndexForFooterIndexPaths;
  @param sectionRecords    An array of FSQSectionRecord objects. The array will be copied.
  @param selectionStrategy A hint to the manifest on what to do with any existing selected rows.
  */
-- (void)setSectionRecords:(NSArray<FSQSectionRecord *> *)sectionRecords
+- (void)setSectionRecords:(nullable NSArray<FSQSectionRecord *> *)sectionRecords
         selectionStrategy:(FSQViewReloadCellSelectionStrategy)selectionStrategy;
 
 /**
@@ -618,8 +618,8 @@ extern const NSInteger kRowIndexForFooterIndexPaths;
  
  @return A new collection view cell manifest.
  */
-- (instancetype)initWithDelegate:(id)delegate
-                         plugins:(NSArray<id<FSQCellManifestPlugin>> *)plugins
+- (instancetype)initWithDelegate:(nullable id)delegate
+                         plugins:(nullable NSArray<id<FSQCellManifestPlugin>> *)plugins
                   collectionView:(UICollectionView *)collectionView;
 
 

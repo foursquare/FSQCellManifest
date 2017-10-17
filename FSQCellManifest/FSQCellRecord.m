@@ -24,8 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation FSQCellRecord {
     NSNumber *_Nullable _allowsHighlighting;
     NSNumber *_Nullable _allowsSelection;
-    NSMutableDictionary<NSString *, id> *_Nullable _userInfo;
 }
+
+@synthesize userInfo = _userInfo;
 
 - (instancetype)initWithModel:(nullable id)model
                     cellClass:(Class)cellClass
@@ -107,9 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
             );
 }
 
-- (NSMutableDictionary<NSString *, id> *)userInfo {
+- (NSMutableDictionary *)userInfo {
     if (!_userInfo) {
-        _userInfo = [NSMutableDictionary new];
+        _userInfo = [[NSMutableDictionary alloc] init];
     }
     
     return _userInfo;

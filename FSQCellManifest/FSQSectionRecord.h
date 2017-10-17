@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note To update a FSQSectionRecord that is already on a FSQCellManifest,
  do not set this property. Instead, use the insertion/removal methods in FSQCellManifest.
  */
-@property (nonatomic, copy, nullable) NSArray<FSQCellRecord *> *cellRecords;
+@property (nonatomic, copy, null_resettable) NSArray<FSQCellRecord *> *cellRecords;
 
 /**
  Insets for this section in a collection view.
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
  This contents of this dictionary are not used internally by the manifest classes.
  You can use it to attach arbitrary data to the cell record for your own later use.
  */
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, id> *userInfo;
+@property (nonatomic, readonly) NSMutableDictionary *userInfo;
 
 /**
  The number of records in this section
@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return A new FSQSectionRecord object with the given properties set.
  */
-- (instancetype)initWithCellRecords:(NSArray<FSQCellRecord *> *)cellRecords
+- (instancetype)initWithCellRecords:(nullable NSArray<FSQCellRecord *> *)cellRecords
                              header:(nullable FSQCellRecord *)header
                              footer:(nullable FSQCellRecord *)footer;
 
