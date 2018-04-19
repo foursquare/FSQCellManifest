@@ -1551,13 +1551,27 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
         NSString *identifier = record.reuseIdentifier ?: NSStringFromClass(record.cellClass);
         
-        if (!record || !identifier || !record.cellClass) {
+        if (!record) {
             @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
                                             reason:@"Attempting to initialize call with a bad or nil FSQCellRecord"
                                           userInfo:nil]);
             return nil;
         }
-        
+
+        if (!identifier) {
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                            reason:@"Attempting to initialize call with a bad or nil identifier"
+                                          userInfo:nil]);
+            return nil;
+        }
+
+        if (!record.cellClass) {
+            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
+                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord cellClass"
+                                          userInfo:nil]);
+            return nil;
+        }
+
         [self registerIdentifier:identifier forCellClass:record.cellClass recordType:FSQCellRecordTypeBody];
         
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
