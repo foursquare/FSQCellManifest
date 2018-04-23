@@ -1564,12 +1564,17 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             if (!record) {
                 badOrNilObject = @"FSQCellRecord";
             }
-            else if (!identifier) {
-                badOrNilObject = @"identifier";
+            if (!identifier) {
+                if (badOrNilObject.length > 0) {
+                    badOrNilObject = [badOrNilObject stringByAppendingString:@" and "];
+                }
+                badOrNilObject = [badOrNilObject stringByAppendingString:@"identifier"];
             }
-            else {
-                //record.cellClass
-                badOrNilObject = @"FSQCellRecord.cellClass";
+            if (!record.cellClass) {
+                if (badOrNilObject.length > 0) {
+                    badOrNilObject = [badOrNilObject stringByAppendingString:@" and "];
+                }
+                badOrNilObject = [badOrNilObject stringByAppendingString:@"FSQCellRecord.cellClass"];
             }
             NSString *reasonFormatter = @"Attempting to initialize call with a bad or nil %@ in class: %@ with %@ and %@";
 
