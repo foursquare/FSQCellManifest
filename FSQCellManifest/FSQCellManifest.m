@@ -1551,25 +1551,39 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         FSQCellRecord *record = [self cellRecordAtIndexPath:indexPath];
         NSString *identifier = record.reuseIdentifier ?: NSStringFromClass(record.cellClass);
         
-        if (!record) {
-            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
-                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord"
-                                          userInfo:nil]);
-            return nil;
-        }
+        if (!record || !identifier || !record.cellClass) {
+            NSString *delegateClassName = NSStringFromClass([self.delegate class]) ?: @"";
+            NSString *indexPathString = [NSString stringWithFormat:@"indexPath.section: %@, indexPath.row: %@",
+                                         @(indexPath.section),
+                                         @(indexPath.row)];
+            NSString *tablePathString = [NSString stringWithFormat:@"tableView.numberOfSections: %@, [tableView numberOfRowsInSection:indexPath.section]: %@",
+                                         @(tableView.numberOfSections),
+                                         @([tableView numberOfRowsInSection:indexPath.section])];
 
-        if (!identifier) {
-            @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
-                                            reason:@"Attempting to initialize call with a bad or nil identifier"
-                                          userInfo:nil]);
-            return nil;
-        }
+            NSString *badOrNilObject = @"";
+            if (!record) {
+                badOrNilObject = @"FSQCellRecord";
+            }
+            else if (!identifier) {
+                badOrNilObject = @"identifier";
+            }
+            else {
+                //record.cellClass
+                badOrNilObject = @"FSQCellRecord.cellClass";
+            }
+            NSString *reasonFormatter = @"Attempting to initialize call with a bad or nil %@ in class: %@ with %@ and %@";
 
-        if (!record.cellClass) {
+            NSString *reason = [NSString stringWithFormat:reasonFormatter,
+                                badOrNilObject,
+                                delegateClassName,
+                                indexPathString,
+                                tablePathString];
+
             @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
-                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord cellClass"
+                                            reason:reason
                                           userInfo:nil]);
             return nil;
+
         }
 
         [self registerIdentifier:identifier forCellClass:record.cellClass recordType:FSQCellRecordTypeBody];
