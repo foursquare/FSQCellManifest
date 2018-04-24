@@ -1552,12 +1552,45 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
         NSString *identifier = record.reuseIdentifier ?: NSStringFromClass(record.cellClass);
         
         if (!record || !identifier || !record.cellClass) {
+            NSString *delegateClassName = NSStringFromClass([self.delegate class]) ?: @"";
+            NSString *indexPathString = [NSString stringWithFormat:@"indexPath.section: %@, indexPath.row: %@",
+                                         @(indexPath.section),
+                                         @(indexPath.row)];
+            NSString *tablePathString = [NSString stringWithFormat:@"tableView.numberOfSections: %@, [tableView numberOfRowsInSection:indexPath.section]: %@",
+                                         @(tableView.numberOfSections),
+                                         @([tableView numberOfRowsInSection:indexPath.section])];
+
+            NSString *badOrNilObject = @"";
+            if (!record) {
+                badOrNilObject = @"FSQCellRecord";
+            }
+            if (!identifier) {
+                if (badOrNilObject.length > 0) {
+                    badOrNilObject = [badOrNilObject stringByAppendingString:@" and "];
+                }
+                badOrNilObject = [badOrNilObject stringByAppendingString:@"identifier"];
+            }
+            if (!record.cellClass) {
+                if (badOrNilObject.length > 0) {
+                    badOrNilObject = [badOrNilObject stringByAppendingString:@" and "];
+                }
+                badOrNilObject = [badOrNilObject stringByAppendingString:@"FSQCellRecord.cellClass"];
+            }
+            NSString *reasonFormatter = @"Attempting to initialize call with a bad or nil %@ in class: %@ with %@ and %@";
+
+            NSString *reason = [NSString stringWithFormat:reasonFormatter,
+                                badOrNilObject,
+                                delegateClassName,
+                                indexPathString,
+                                tablePathString];
+
             @throw ([NSException exceptionWithName:kFSQIdentifierClassMismatchException
-                                            reason:@"Attempting to initialize call with a bad or nil FSQCellRecord"
+                                            reason:reason
                                           userInfo:nil]);
             return nil;
+
         }
-        
+
         [self registerIdentifier:identifier forCellClass:record.cellClass recordType:FSQCellRecordTypeBody];
         
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
