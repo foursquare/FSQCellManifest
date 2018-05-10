@@ -622,8 +622,8 @@ typedef NS_ENUM(NSInteger, FSQCellRecordType) {
             [removedCellIndexPathsMutable addObject:[self indexPathForRowOrItem:idx inSection:sectionIndex]];
         }];
     }
-    
-    NSIndexSet *sectionIndexesToRemove = [sectionIndexesToRemoveMutable copy];
+    //NOTE:init sectionIndexesToRemove here, because we must let sectionIndexesToRemove pass nil check so that managedViewUpdates(UI) will be excuted otherwise UI won't be updated
+    NSIndexSet *sectionIndexesToRemove = [sectionIndexesToRemoveMutable copy]?:[NSIndexSet new];
     NSArray *removedCellIndexPaths = [removedCellIndexPathsMutable copy];
     
     if (sectionIndexesToRemove) {
